@@ -8,7 +8,7 @@ import matplotlib
 # #probleme cet import
 #df = pd.read_csv("s3://projet-stat-ensai/Lacentrale.csv",sep=';', dtype=str)
 
-
+#hellow world
 
 
 df = pd.read_csv('/Users/famille//projetstat/.aws/automobile.csv',error_bad_lines=False)
