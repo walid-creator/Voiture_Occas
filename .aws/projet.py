@@ -4,14 +4,14 @@ import numpy
 import scipy
 import sklearn
 import matplotlib
-import nltk
+#import nltk
 # #probleme cet import
 #df = pd.read_csv("s3://projet-stat-ensai/Lacentrale.csv",sep=';', dtype=str)
 
 
 
 
-df = pd.read_csv('/Users/famille/.aws/automobile.csv',error_bad_lines=False)
+df = pd.read_csv('/Users/famille//projetstat/.aws/automobile.csv',error_bad_lines=False)
 print(df.head(10))
 #print(df.iloc[:,15:21].head(10))
 #u'reference', u'url', u'user_id': variables d'indentification,
@@ -173,6 +173,7 @@ for j in range(df.shape[0]):
         df[u'couleur'][j]="gris"
 
 '''
+'''
 #print(df.loc[df[u'couleur'][0:5]=="blanc",:])
 MissingData=df[u'couleur'].value_counts(dropna=False)
 print(MissingData)
@@ -232,3 +233,4 @@ sns.boxplot(x=u"premiere_main", y=u"prix_vente", data=df)
 plt.show()
 
 #df.drop([u'reference', u'url', u'user_id'],axis=0,inplace=True)
+'''
