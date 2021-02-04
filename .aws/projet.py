@@ -8,8 +8,12 @@ import matplotlib
 # #probleme cet import
 #df = pd.read_csv("s3://projet-stat-ensai/Lacentrale.csv",sep=';', dtype=str)
 
+<<<<<<< HEAD
 #hellow world!!
 
+=======
+#hellow world !
+>>>>>>> nombranche
 
 df = pd.read_csv('/Users/famille//projetstat/.aws/automobile.csv',error_bad_lines=False)
 print(df.head(10))
