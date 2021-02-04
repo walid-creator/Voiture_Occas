@@ -10,7 +10,6 @@ import matplotlib
 
 #hellow world !
 
-
 df = pd.read_csv('/Users/famille//projetstat/.aws/automobile.csv',error_bad_lines=False)
 print(df.head(10))
 #print(df.iloc[:,15:21].head(10))
