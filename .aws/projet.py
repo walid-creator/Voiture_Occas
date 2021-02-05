@@ -228,3 +228,4 @@ plt.show()
 print(df.shape)#52513x26
 print(df.columns)
 print(df.isnull().sum())
+#hi
