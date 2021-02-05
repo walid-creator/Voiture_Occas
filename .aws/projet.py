@@ -7,7 +7,7 @@ import matplotlib
 #import nltk
 #probleme cet import
 #df = pd.read_csv("s3://projet-stat-ensai/Lacentrale.csv",sep=';', dtype=str)
-
+#df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
 
 
 
@@ -161,14 +161,15 @@ df[u"couleur"].replace("noire", "noir",inplace= True)
 df[u"couleur"].replace("grise", "gris",inplace= True)
 df[u"couleur"].replace("roue flamme", "rouge flamme",inplace= True)
 '''
-
-#imputation par le mode de la variable couleur
-'''for j in range(df.shape[0]):
-    if type(df[u'couleur'][j])!=str or df[u'couleur'][j]=="non renseigne" or df[u'couleur'][j][0:2]=="n1":
-        df[u'couleur'][j]="gris"
 '''
-df = pd.read_csv('/Users/famille//projetstat/.aws/automobile.csv',error_bad_lines=False)
-print(df.head(10))
+df = pd.read_csv('/Users/famille//projetstat/.aws/automobile.csv',error_bad_lines=False,index_col=0)
+#imputation par le mode de la variable couleur
+
+for j in range(df.shape[0]):
+    if type(df[u'couleur'][j])!=str or df[u'couleur'][j]=="non renseigne" or df[u'couleur'][j][0:2]=="n1" or df[u'couleur'][j]== "nan":
+        df[u'couleur'][j]="gris"
+
+'''
 
 #Analyse descriptive
 '''
@@ -213,19 +214,29 @@ print(df[[u"AgeAnnee", u"prix_vente"]].corr())# 0.048
 '''
 
 #correlation entres variables qualitatives et le prix
-'''
+
 from scipy import stats
 #pearson_coef, p_value = stats.pearsonr(df[u"AgeAnnee"], df[u"prix_vente"])
 #print("The Pearson Correlation Coefficient is", pearson_coef, " with a P-value of P =", p_value)
 #print(df['couleur'].value_counts().to_frame())
-sns.boxplot(x=u"premiere_main", y=u"prix_vente", data=df)
-plt.show()
+#sns.boxplot(x=u"premiere_main", y=u"prix_vente", data=df)
+#plt.show()
+
+#verifier la presence de val manquantes et les chercher:
 '''
-#df = pd.read_csv('/Users/famille//projetstat/.aws/automobile.csv',error_bad_lines=False)
-#print(df.head(10))
+print(df.isnull().sum())
+valManCoul=[]
+for i in range(df.shape[0]):
+    if df[u'couleur'].isnull()[i]==True:
+       print(i)
+print(valManCoul)
+'''
 
 #valeurs influentes
-print(df.shape)#52513x26
-print(df.columns)
-print(df.isnull().sum())
-#hi
+#print(df.shape)#52513x26
+
+
+
+
+
+df.to_csv('/Users/famille//projetstat/.aws/automobile.csv')
