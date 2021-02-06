@@ -7,7 +7,7 @@ import matplotlib
 #import nltk
 #probleme cet import
 #df = pd.read_csv("s3://projet-stat-ensai/Lacentrale.csv",sep=';', dtype=str)
-#df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
+df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
 
 
 
@@ -185,13 +185,13 @@ print(df['prix_vente'].astype('float').median(axis=0))
 print(df['prix_vente'].astype('float').std(axis=0))# ecrart type au sens statistique n-1 et saute eventuellement les na
 #la moyenne et la mediane sont proches
 #un ecrat type trop grand de 55622
-#ou
-print(df.describe())
-'''
+#ou'''
+print(df[u"prix_vente"].describe())
 
 
-#reprensentation graphique pour les differentes correlations
-'''
+
+#import necessaire
+
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
@@ -200,11 +200,6 @@ import numpy as np
 #df[u'prix_vente']=pd.to_numeric(df[u'prix_vente'], downcast='integer')
 #plt.bar(group_names, df[u'prix_vente'].value_counts())
 
-# set x/y labels and plot title
-#plt.xlabel(u"prix_vente")
-#plt.ylabel(u"count")
-#plt.title(u"prix_vente")
-'''
 
 #correlation entres variables quantitatives et le prix
 '''print(df[[u"kilometrage", u"prix_vente"]].corr())#il est bien negative mais faible 0.051
@@ -220,8 +215,10 @@ from scipy import stats
 #print("The Pearson Correlation Coefficient is", pearson_coef, " with a P-value of P =", p_value)
 #print(df['couleur'].value_counts().to_frame())
 #sns.boxplot(x=u"premiere_main", y=u"prix_vente", data=df)
+#sns.boxplot(df[u"prix_vente"])
 #plt.show()
-
+valmax=df[u'prix_vente'].quantile(0.9999999999999)
+print(valmax)
 #verifier la presence de val manquantes et les chercher:
 '''
 print(df.isnull().sum())
