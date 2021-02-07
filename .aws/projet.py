@@ -1,16 +1,15 @@
+# coding: utf-8
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 import numpy
 import scipy
 import sklearn
 import matplotlib
+import s3fs
 #import nltk
 #probleme cet import
-#df = pd.read_csv("s3://projet-stat-ensai/Lacentrale.csv",sep=';', dtype=str)
-df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
-
-
-
+#df1 = pd.read_csv("s3://projet-stat-ensai/Lacentrale.csv",sep=';', dtype=str)
+df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False)
 
 
 #print(df.iloc[:,15:21].head(10))
@@ -185,13 +184,13 @@ print(df['prix_vente'].astype('float').median(axis=0))
 print(df['prix_vente'].astype('float').std(axis=0))# ecrart type au sens statistique n-1 et saute eventuellement les na
 #la moyenne et la mediane sont proches
 #un ecrat type trop grand de 55622
-#ou'''
+#ou
 print(df[u"prix_vente"].describe())
-
+'''
 
 
 #import necessaire
-
+'''
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
@@ -200,7 +199,7 @@ import numpy as np
 #df[u'prix_vente']=pd.to_numeric(df[u'prix_vente'], downcast='integer')
 #plt.bar(group_names, df[u'prix_vente'].value_counts())
 
-
+'''
 #correlation entres variables quantitatives et le prix
 '''print(df[[u"kilometrage", u"prix_vente"]].corr())#il est bien negative mais faible 0.051
 print(df[[u"puissance_fiscale", u"prix_vente"]].corr())#0.022
@@ -209,7 +208,7 @@ print(df[[u"AgeAnnee", u"prix_vente"]].corr())# 0.048
 '''
 
 #correlation entres variables qualitatives et le prix
-
+'''
 from scipy import stats
 #pearson_coef, p_value = stats.pearsonr(df[u"AgeAnnee"], df[u"prix_vente"])
 #print("The Pearson Correlation Coefficient is", pearson_coef, " with a P-value of P =", p_value)
@@ -217,8 +216,7 @@ from scipy import stats
 #sns.boxplot(x=u"premiere_main", y=u"prix_vente", data=df)
 #sns.boxplot(df[u"prix_vente"])
 #plt.show()
-valmax=df[u'prix_vente'].quantile(0.9999999999999)
-print(valmax)
+'''
 #verifier la presence de val manquantes et les chercher:
 '''
 print(df.isnull().sum())
@@ -228,11 +226,52 @@ for i in range(df.shape[0]):
        print(i)
 print(valManCoul)
 '''
+#on trouve "horsepower", "engine", "porte", "puissance_fiscale" et "option"
+
+#imputaion des variables quantitatives par la médiane:
+
+# Convertion en float
+df[["horsepower", "engine","puissance_fiscale"]] = df[["horsepower", "engine","puissance_fiscale"]].astype(float)
+# Remplacer NAN en utilisant la valeur médiane
+df[["horsepower", "engine","puissance_fiscale"]] = df[["horsepower", "engine","puissance_fiscale"]].fillna(df[["horsepower", "engine","puissance_fiscale"]].median())
+
+#imputation des variables qualitatives par le mode
+
+## Uniformisation des variables
+df.boite_de_vitesse = df.replace(["mÃ©canique", "mécanique"], "meca")
+df.boite_de_vitesse = df.boite_de_vitesse.replace("automatique", "auto")
+
+from numpy import unique
+modalite = unique(df.boite_de_vitesse) # 2 modalités
+
+# Recodage de la variable energie
+
+df.loc[df["energie"] == "Bicarburation essence GPL","energie"] = "begpl"
+df.loc[df["energie"] == "Bicarburation essence bioéthanol","energie"] = "bebeth"
+df.loc[df["energie"] == "Biocarburant","energie"] = "biocar"
+df.loc[df["energie"] == "Diesel","energie"] = "diesel"
+df.loc[df["energie"] == "Electrique","energie"] = "electrik"
+df.loc[df["energie"] == "Essence","energie"] = "essence"
+df.loc[df["energie"] == "Hybride essence électrique","energie"] = "heelect"
+modaliteEnergie = unique(df.energie) # 6 modalités
+
+### Recodage de la variable modele_com
+print(df.columns)
+df.loc[df["modele_com"] == "nan","modele_com"] = "CLIO 4"
+
+#imputation par le mode
+df[["modele_com","boite_de_vitesse", "porte"]] = df[["modele_com","boite_de_vitesse", "porte"]].fillna(df[u"porte"].mode)
+print(df.isna().sum())
+
+
 
 #valeurs influentes
+'''
 #print(df.shape)#52513x26
 
-
+valmax=df[u'prix_vente'].quantile(0.9999999999999)
+print(valmax)
+'''
 
 
 
