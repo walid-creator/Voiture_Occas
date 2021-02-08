@@ -10,7 +10,8 @@ import s3fs
 #probleme cet import
 #df1 = pd.read_csv("s3://projet-stat-ensai/Lacentrale.csv",sep=';', dtype=str)
 df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
-
+print(df.shape)
+print(df.head())
 
 #print(df.iloc[:,15:21].head(10))
 #u'reference', u'url', u'user_id': variables d'indentification,
@@ -127,29 +128,49 @@ for i in range(df.shape[0]):
            AgeMois.append( df['MoisDepublication'][i] - df['MoisMiseEnVente'][i]+12)
            AgeJour.append( df['JourDepublication'][i]-df['JourMiseEnVente'][i])
        else:
-
+           AgeMois.append( df['MoisDepublication'][i] - df['MoisMiseEnVente'][i]+11)
+           AgeJour.append( df['JourDepublication'][i] - df['JourMiseEnVente'][i]+30)
+df['AgeJour']=AgeJour
+df['AgeMois']=AgeMois
+df['AgeAnnee']=AgeAnnee
+'''
 import numpy as np
 #df[u'prix_vente']=pd.to_numeric(df[u'prix_vente'], downcast='integer')
 #plt.bar(group_names, df[u'prix_vente'].value_counts())
 
+
+
+#supression des variables avec une seule modalite
 '''
-#correlation entres variables quantitatives et le prix
-'''print(df[[u"kilometrage", u"prix_vente"]].corr())#il est bien negative mais faible 0.051
-print(df[[u"puissance_fiscale", u"prix_vente"]].corr())#0.022
-print(df[[u"horsepower", u"prix_vente"]].corr())#0.035
-print(df[[u"AgeAnnee", u"prix_vente"]].corr())# 0.048
+df.drop([u'type', u'marque',u'modele'], axis=1, inplace=True)
+
+#Detection des valeurs manquantes:
+#df[u'horsepower']=pd.to_numeric(df[u'horsepower'], downcast='integer')
+#sans:u'prix_vente',u'horsepower',u'departement'(a discretiser),u'energie', u'kilometrage'
+#avec: u'couleur'(Autre/non affecte,N/a,RQH, OR) (1,1,1),u'puissance_fiscale'(NaN)(3),u'porte'(NaN)(4),u'horsepower'(NaN)(750)
+
+'''
+#uniformiser la variable couleur:
+'''
+for i in range(df.shape[0]):
+    if type(df[u'couleur'][i])==str:
+        df[u'couleur'][i]=df[u'couleur'][i].lower()
+#print(df.loc[df[u'couleur']=="blnache",:])
+#df.iloc[44695,15]="blanc"
+df[u"couleur"].replace("blnache", "blanc",inplace= True)
+df[u"couleur"].replace("noiir", "noir",inplace= True)
+df[u"couleur"].replace("blanche", "blanc",inplace= True)
+df[u"couleur"].replace("noire", "noir",inplace= True)
+df[u"couleur"].replace("grise", "gris",inplace= True)
+df[u"couleur"].replace("roue flamme", "rouge flamme",inplace= True)
 '''
 
-#correlation entres variables qualitatives et le prix
+#imputation par le mode de la variable couleur
+'''for j in range(df.shape[0]):
+    if type(df[u'couleur'][j])!=str or df[u'couleur'][j]=="non renseigne" or df[u'couleur'][j][0:2]=="n1":
+        df[u'couleur'][j]="gris"
 '''
-from scipy import stats
-#pearson_coef, p_value = stats.pearsonr(df[u"AgeAnnee"], df[u"prix_vente"])
-#print("The Pearson Correlation Coefficient is", pearson_coef, " with a P-value of P =", p_value)
-#print(df['couleur'].value_counts().to_frame())
-#sns.boxplot(x=u"premiere_main", y=u"prix_vente", data=df)
-#sns.boxplot(df[u"prix_vente"])
-#plt.show()
-'''
+
 #verifier la presence de val manquantes et les chercher:
 '''
 print(df.isnull().sum())
@@ -160,6 +181,41 @@ for i in range(df.shape[0]):
 print(valManCoul)
 '''
 #on trouve "horsepower", "engine", "porte", "puissance_fiscale" et "option"
+
+#Analyse descriptive
+'''
+print(df.loc[df[u'couleur'][0:5]=="blanc",:])
+MissingData=df[u'couleur'].value_counts(dropna=False)
+print(MissingData)
+
+print(df.iloc[44695,22])
+print(df['prix_vente'].astype('float').mean(axis=0))
+print(df['prix_vente'].astype('float').max(axis=0))
+print(df['prix_vente'].astype('float').min(axis=0))
+print(df['prix_vente'].astype('float').median(axis=0))
+print(df['prix_vente'].astype('float').std(axis=0))# ecrart type au sens statistique n-1 et saute eventuellement les na
+#la moyenne et la mediane sont proches
+#un ecrat type trop grand de 55622
+#ou
+print(df.describe())
+'''
+
+
+#reprensentation graphique pour les differentes correlations
+'''
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+#df[u'prix_vente']=pd.to_numeric(df[u'prix_vente'], downcast='integer')
+#plt.bar(group_names, df[u'prix_vente'].value_counts())
+
+# set x/y labels and plot title
+#plt.xlabel(u"prix_vente")
+#plt.ylabel(u"count")
+#plt.title(u"prix_vente")
+'''
 
 #imputaion des variables quantitatives par la médiane:
 
@@ -189,8 +245,10 @@ df.loc[df["energie"] == "Essence","energie"] = "essence"
 df.loc[df["energie"] == "Hybride essence électrique","energie"] = "heelect"
 modaliteEnergie = unique(df.energie) # 6 modalités
 """
-"""
+
 ### Recodage de la variable modele_com
+"""
+
 print(df.columns)
 df.loc[df["modele_com"] == "nan","modele_com"] = "CLIO 4"
 """
@@ -200,6 +258,25 @@ df[["modele_com","boite_de_vitesse", "porte"]] = df[["modele_com","boite_de_vite
 print(df.isna().sum())
 
 """
+
+
+#correlation entres variables quantitatives et le prix
+'''print(df[[u"kilometrage", u"prix_vente"]].corr())#il est bien negative mais faible 0.051
+print(df[[u"puissance_fiscale", u"prix_vente"]].corr())#0.022
+print(df[[u"horsepower", u"prix_vente"]].corr())#0.035
+print(df[[u"AgeAnnee", u"prix_vente"]].corr())# 0.048
+'''
+
+#correlation entres variables qualitatives et le prix
+'''
+from scipy import stats
+#pearson_coef, p_value = stats.pearsonr(df[u"AgeAnnee"], df[u"prix_vente"])
+#print("The Pearson Correlation Coefficient is", pearson_coef, " with a P-value of P =", p_value)
+#print(df['couleur'].value_counts().to_frame())
+#sns.boxplot(x=u"premiere_main", y=u"prix_vente", data=df)
+#sns.boxplot(df[u"prix_vente"])
+#plt.show()
+'''
 
 #valeurs influentes
 '''
@@ -211,4 +288,4 @@ print(valmax)
 
 
 
-#df.to_csv('/Users/famille//projetstat/.aws/automobile.csv')
+#df.to_csv('/Users/famille//projetstat/.aws/automobile.csv')@
