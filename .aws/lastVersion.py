@@ -8,8 +8,8 @@ import matplotlib
 import s3fs
 #import nltk
 #probleme cet import
-#df = pd.read_csv("s3://projet-stat-ensai/Lacentrale.csv",sep=';', dtype=str)
-df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
+df = pd.read_csv("s3://projet-stat-ensai/Lacentrale.csv",sep=';', dtype=str)
+#df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
 #print(df.shape)
 #print(df.head())
 #print(df.columns)
@@ -43,17 +43,16 @@ df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_line
 ######################traitement###########################################
 
 #suppression des variables d'id:
-'''
+
 df.drop([u'reference', u'url', u'user_id'],axis=1,inplace=True)
-'''
 #creation de la variable age
-'''
+
 from pandas import to_datetime
 df["date_mec"] = to_datetime(df["date_mec"])
 df["date_publication"] = to_datetime(df["date_publication"]).dt.tz_localize(None)
 df["date_depublication"] = to_datetime(df["date_depublication"]).dt.tz_localize(None)
 df["age"] = (df["date_depublication"]  - df["date_mec"]).dt.days
-'''
+
 import numpy as np
 #df[u'prix_vente']=pd.to_numeric(df[u'prix_vente'], downcast='integer')
 #plt.bar(group_names, df[u'prix_vente'].value_counts())
@@ -62,16 +61,15 @@ import numpy as np
 
 #supression des variables avec une seule modalite
 
-'''
 df.drop([u'type', u'marque',u'modele'], axis=1, inplace=True)
-'''
+
 
 
 
 
 
 #uniformiser la variable couleur:
-'''
+
 for i in range(df.shape[0]):
     if type(df[u'couleur'][i])==str:
         df[u'couleur'][i]=df[u'couleur'][i].lower()
@@ -85,22 +83,46 @@ df[u"couleur"].replace("noire", "noir",inplace= True)
 df[u"couleur"].replace("grise", "gris",inplace= True)
 df[u"couleur"].replace("roue flamme", "rouge flamme",inplace= True)
 df[u"couleur"].replace("blnache", "blanc",inplace= True)
-
+df[u"couleur"].replace("*lanc", "blanc",inplace= True)
+#valeur manquantes de couleur:
+df[u"couleur"] = df[u"couleur"].fillna("autre")
+df[u"couleur"].replace("2017el50360", "autre",inplace= True)
+df[u"couleur"].replace("+", "autre",inplace= True)
+df[u"couleur"].replace("eqb", "autre",inplace= True)
+df[u"couleur"].replace("eehbrunral8007", "autre",inplace= True)
+df[u"couleur"].replace(".", "autre",inplace= True)
+df[u"couleur"].replace("inc", "autre",inplace= True)
+df[u"couleur"].replace("inc.", "autre",inplace= True)
+df[u"couleur"].replace("inconn", "autre",inplace= True)
+df[u"couleur"].replace("inconnu", "autre",inplace= True)
+df[u"couleur"].replace("inconnue", "autre",inplace= True)
+df[u"couleur"].replace("inconu", "autre",inplace= True)
+df[u"couleur"].replace("kpn", "autre",inplace= True)
+df[u"couleur"].replace("n.c.", "autre",inplace= True)
+df[u"couleur"].replace("n/a", "autre",inplace= True)
+df[u"couleur"].replace("nc", "autre",inplace= True)
+df[u"couleur"].replace("neutre.", "autre",inplace= True)
+df[u"couleur"].replace("xx", "autre",inplace= True)
+df[u"couleur"].replace("rqh", "autre",inplace= True)
+df[u"couleur"].replace("non condifiee", "autre",inplace= True)
+df[u"couleur"].replace("non renseigne", "autre",inplace= True)
+df[u"couleur"].replace('autre / non affect\xc3\xa9', "autre",inplace= True)
 for j in range(df.shape[0]):
-    if type(df[u'couleur'][j])!=str or df[u'couleur'][j]=="non renseigne" or df[u'couleur'][j][0:2]=="n1":
-        df[u'couleur'][j]='missing'
-'''
-'''
+    if type(df[u'couleur'][j])==str:
+        if df[u'couleur'][j][0:2] == "n1":
+            df[u'couleur'][j]='autre'
+
+
 ## Uniformisation de la variable boite_de_vitesse
 
 df["boite_de_vitesse"] = df["boite_de_vitesse"].replace(["mÃ©canique", "mécanique"], "meca")
 df["boite_de_vitesse"] = df["boite_de_vitesse"].replace("automatique", "auto")
 from numpy import unique
 modalite = unique(df.boite_de_vitesse) # 2 modalités"""
-'''
+
 # Recodage de la variable energie en ne gardant que certaines modalités
 
-'''
+
 df.loc[df["energie"] == "Diesel","energie"] = "diesel"
 df.loc[df["energie"] == "Electrique","energie"] = "electrique"
 df.loc[df["energie"] == "Essence","energie"] = "essence"
@@ -114,7 +136,7 @@ indexNames3 = df[ df["energie"] == 'Biocarburant'].index
 df["energie"].drop(indexNames1, inplace=True)
 df["energie"].drop(indexNames2, inplace=True)
 df["energie"].drop(indexNames3, inplace=True)
-'''
+
 
 
 
@@ -130,14 +152,15 @@ df["energie"].drop(indexNames3, inplace=True)
 #verifier la presence de val manquantes et les chercher:
 '''
 print(df.isna().sum())
+
 print(df.isnull().sum())
 valManCoul=[]
 for i in range(df.shape[0]):
     if df[u'couleur'].isnull()[i]==True:
        print(i)
 print(valManCoul)
-
 '''
+
 
 
 #faire un clustering en utilisant les variables quantitatives
@@ -145,8 +168,7 @@ print(valManCoul)
 
 
 
-
-quanti=df[["kilometrage","age"]]#sans aleurs manquantes
+#quanti=df[["kilometrage","age"]]#sans aleurs manquantes
 
 from sklearn.cluster import KMeans
 import pandas as pd
@@ -179,7 +201,6 @@ df['age'] = scaler.transform(df[['age']])
 scaler.fit(df[['kilometrage']])
 df['kilometrage'] = scaler.transform(df[['kilometrage']])
 
-
 #methode des kmeans pour chaque choix de nbr de clusters
 #choix de k
 
@@ -187,7 +208,7 @@ sse = []
 k_rng = range(1,10)
 for k in k_rng:
     km = KMeans(n_clusters=k)
-    km.fit(quanti[['age','kilometrage']])
+    km.fit(df[['age','kilometrage']])
     sse.append(km.inertia_)
 
 plt.xlabel('K')
@@ -201,13 +222,14 @@ km = KMeans(n_clusters=3)
 y_predicted = km.fit_predict(df[['age','kilometrage']])
 y_predicted
 df['cluster']=y_predicted
-print(df.head())
+
 print(km.cluster_centers_) # centres des classes 
 
 #construire chaque dataframe et repre graphique
 df1 = df[df.cluster==0]
 df2 = df[df.cluster==1]
 df3 = df[df.cluster==2]
+print(df3["couleur"].mode())
 #df4 = quanti[quanti.cluster==3]
 plt.scatter(df1.age,df1['kilometrage'],color='green')
 plt.scatter(df2.age,df2['kilometrage'],color='red')
@@ -217,10 +239,10 @@ plt.scatter(km.cluster_centers_[:,0],km.cluster_centers_[:,1],color='purple',mar
 plt.xlabel('age')
 plt.ylabel('kilometrage')
 plt.show()
-print(df1.shape)#(17823, 3)
-print(df2.shape)#(17823, 3)
-print(df3.shape)#(27575, 3)
-#print(df4.shape)#(2024, 3)
+#print(df1.shape)#(17823, 3)
+#print(df2.shape)#(17823, 3)
+#print(df3.shape)#(27575, 3)
+##print(df4.shape)###(2024, 3)
 
 
 #imputation par le mode
@@ -234,28 +256,32 @@ df3[["modele_com","boite_de_vitesse", "porte"]] = df3[["modele_com","boite_de_vi
 
 
 
-
+print(df1[u"couleur"].mode()[0])
+print(df2[u"couleur"].mode()[0])
+print(df3[u"couleur"].mode()[0])
 #imputation par le mode de la variable couleur
-df1["couleur"] = df1[u"couleur"].replace("missing", df1[u"couleur"].mode,inplace= True)
-df2["couleur"] = df2[u"couleur"].replace("missing", df2[u"couleur"].mode,inplace= True)
-df3["couleur"] = df3[u"couleur"].replace("missing", df3[u"couleur"].mode,inplace= True)
-
+df1["couleur"].replace("autre",df1[u"couleur"].mode,inplace= True)
+df2["couleur"].replace("autre",df2[u"couleur"].mode,inplace= True)
+df3["couleur"].replace("autre",df3[u"couleur"].mode,inplace= True)
 
 
 
 #imputation des variables quantitatives par la médiane:
+
 # Convertion en float
 df[["horsepower", "engine","puissance_fiscale"]] = df[["horsepower", "engine","puissance_fiscale"]].astype(float)
 # Remplacer NAN en utilisant la valeur médiane
 df1[["horsepower", "engine","puissance_fiscale"]] = df1[["horsepower", "engine","puissance_fiscale"]].fillna(df1[["horsepower", "engine","puissance_fiscale"]].median())
 df2[["horsepower", "engine","puissance_fiscale"]] = df2[["horsepower", "engine","puissance_fiscale"]].fillna(df2[["horsepower", "engine","puissance_fiscale"]].median())
 df3[["horsepower", "engine","puissance_fiscale"]] = df3[["horsepower", "engine","puissance_fiscale"]].fillna(df3[["horsepower", "engine","puissance_fiscale"]].median())
-print(df["couleur"])
+
 
 df= pd.concat([df1,df2,df3], ignore_index=True)
-print(df["couleur"])
+
 print(df.isna().sum())
-print(df1[u"couleur"].mode)
+print(df.head())
+
+
 #Analyse descriptive
 '''
 print(df.loc[df[u'couleur'][0:5]=="blanc",:])
@@ -318,5 +344,5 @@ from scipy import stats
 valmax=df[u'prix_vente'].quantile(0.9999999999999)
 print(valmax)
 '''
-
-#df.to_csv('/Users/famille//projetstat/.aws/automobile.csv')
+#print(df)
+df.to_csv('/Users/famille//projetstat/.aws/automobile1.csv')
