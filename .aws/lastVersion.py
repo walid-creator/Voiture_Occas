@@ -8,8 +8,8 @@ import matplotlib
 import s3fs
 #import nltk
 #probleme cet import
-df = pd.read_csv("s3://projet-stat-ensai/Lacentrale.csv",sep=';', dtype=str)
-#df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
+#df = pd.read_csv("s3://projet-stat-ensai/Lacentrale.csv",sep=';', dtype=str)
+df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
 #print(df.shape)
 #print(df.head())
 #print(df.columns)
@@ -43,7 +43,7 @@ df = pd.read_csv("s3://projet-stat-ensai/Lacentrale.csv",sep=';', dtype=str)
 ######################traitement###########################################
 
 #suppression des variables d'id:
-
+'''
 df.drop([u'reference', u'url', u'user_id'],axis=1,inplace=True)
 #creation de la variable age
 
@@ -52,7 +52,7 @@ df["date_mec"] = to_datetime(df["date_mec"])
 df["date_publication"] = to_datetime(df["date_publication"]).dt.tz_localize(None)
 df["date_depublication"] = to_datetime(df["date_depublication"]).dt.tz_localize(None)
 df["age"] = (df["date_depublication"]  - df["date_mec"]).dt.days
-
+'''
 import numpy as np
 #df[u'prix_vente']=pd.to_numeric(df[u'prix_vente'], downcast='integer')
 #plt.bar(group_names, df[u'prix_vente'].value_counts())
@@ -60,16 +60,16 @@ import numpy as np
 
 
 #supression des variables avec une seule modalite
-
+'''
 df.drop([u'type', u'marque',u'modele'], axis=1, inplace=True)
-
+'''
 
 
 
 
 
 #uniformiser la variable couleur:
-
+'''
 for i in range(df.shape[0]):
     if type(df[u'couleur'][i])==str:
         df[u'couleur'][i]=df[u'couleur'][i].lower()
@@ -136,7 +136,7 @@ indexNames3 = df[ df["energie"] == 'Biocarburant'].index
 df["energie"].drop(indexNames1, inplace=True)
 df["energie"].drop(indexNames2, inplace=True)
 df["energie"].drop(indexNames3, inplace=True)
-
+'''
 
 
 
@@ -190,11 +190,12 @@ plt.show()
 '''
 
 #centrer et reduire
-
+''''
 scaler = MinMaxScaler()
 #scaler.fit(quanti[[]])
 #quanti["prix_vente"] = scaler.transform(quanti[['prix_vente']])
-
+'''
+'''
 scaler.fit(df[['age']])
 df['age'] = scaler.transform(df[['age']])
 
@@ -277,7 +278,7 @@ df3[["horsepower", "engine","puissance_fiscale"]] = df3[["horsepower", "engine",
 
 
 df= pd.concat([df1,df2,df3], ignore_index=True)
-
+'''
 print(df.isna().sum())
 print(df.head())
 
@@ -345,4 +346,4 @@ valmax=df[u'prix_vente'].quantile(0.9999999999999)
 print(valmax)
 '''
 #print(df)
-df.to_csv('/Users/famille//projetstat/.aws/automobile1.csv')
+#df.to_csv('/Users/famille//projetstat/.aws/automobile.csv')
