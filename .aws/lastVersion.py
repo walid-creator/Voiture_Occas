@@ -10,6 +10,7 @@ import s3fs
 #probleme cet import
 #df = pd.read_csv("s3://projet-stat-ensai/Lacentrale.csv",sep=';', dtype=str)
 df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
+#df = pd.read_csv("/Users/famille//projetstat/.aws/aws_automobile.csv",error_bad_lines=False,index_col=0)
 #print(df.shape)
 #print(df.head())
 #print(df.columns)
@@ -112,17 +113,16 @@ for j in range(df.shape[0]):
         if df[u'couleur'][j][0:2] == "n1":
             df[u'couleur'][j]='autre'
 
-
+'''
 ## Uniformisation de la variable boite_de_vitesse
-
+"""
 df["boite_de_vitesse"] = df["boite_de_vitesse"].replace(["mÃ©canique", "mécanique"], "meca")
 df["boite_de_vitesse"] = df["boite_de_vitesse"].replace("automatique", "auto")
 from numpy import unique
-modalite = unique(df.boite_de_vitesse) # 2 modalités"""
-
+modalite = unique(df.boite_de_vitesse) # 2 modalités
+"""
 # Recodage de la variable energie en ne gardant que certaines modalités
-
-
+'''
 df.loc[df["energie"] == "Diesel","energie"] = "diesel"
 df.loc[df["energie"] == "Electrique","energie"] = "electrique"
 df.loc[df["energie"] == "Essence","energie"] = "essence"
@@ -369,6 +369,7 @@ modalite4=unique(df["energie"])
 modalite5=unique(df["porte"])
 modalite6=unique(df["boite_de_vitesse"])
 modalite7=unique(df["premiere_main"])
-print(modalite2)
+print(modalite4)
+
 
 #df.to_csv('/Users/famille//projetstat/.aws/automobile.csv')
