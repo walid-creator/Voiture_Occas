@@ -8,8 +8,8 @@ import matplotlib
 import s3fs
 #import nltk
 #probleme cet import
-#df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
-df = pd.read_csv("/Users/famille//projetstat/.aws/aws_automobile.csv",error_bad_lines=False,index_col=0)
+df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
+#df = pd.read_csv("/Users/famille//projetstat/.aws/aws_automobile.csv",error_bad_lines=False,index_col=0)
 #print(df.shape)
 #print(df.head())
 #print(df.columns)
@@ -369,7 +369,23 @@ modalite4=unique(df["energie"])
 modalite5=unique(df["porte"])
 modalite6=unique(df["boite_de_vitesse"])
 modalite7=unique(df["premiere_main"])
-print(modalite2)
-print(df.head())
+#print(modalite2)
+#print(df.head())
+
+#unifomisation de couleur non encore termine
+"""
+eff = df["couleur"].value_counts()
+pourcent = df["couleur"].value_counts(normalize = True)
+eff = pd.concat([eff, pourcent], axis = "columns")
+pourcent_col=pd.DataFrame(list(pourcent.items()),columns=['couleur','pourcentage'])
+couleurs = pourcent_col[ pourcent_col["pourcentage"]<0.01].couleur
+print(couleurs)
+"""
+#=> pres de 500 couleurs dont le pourcentage est inferieur à 1%
+
+#print(df[df["couleur"]=='verte fonc\xc3\xa9e plate'].prix_vente)
+#print(df[df["couleur"]=='rouge normale m\xc3\xa9t.'].prix_vente)
+
+
 
 #df.to_csv('/Users/famille//projetstat/.aws/automobile.csv')
