@@ -138,6 +138,20 @@ df["energie"].drop(indexNames2, inplace=True)
 df["energie"].drop(indexNames3, inplace=True)
 '''
 
+#uniformisation de la variable model_com
+# Reduction du nombre de modalités qui representent mois de 1% de l'effectif total
+'''
+mod1 = ["CLIO 2 CAMPUS","CLIO 2 CAMPUS SOCIETE", "CLIO 2 RS", "CLIO 2 SOCIETE", "CLIO 2 V6 RS"]
+mod2 = ["CLIO 3 COLLECTION", "CLIO 3 COLLECTION SOCIETE", "CLIO 3 ESTATE", "CLIO 3 RS", "CLIO 3 SOCIETE"]
+mod3 = ["CLIO 4 ESTATE", "CLIO 4 RS", "CLIO 4 SOCIETE"]
+mod4 = ["CLIO 5 SOCIETE"]
+autre = ["CLIO", "MEGANE 4","CAPTUR","ZOE", "CLIO WILLIAMS", "CLIO SOCIETE", "TWINGO 3", "GRAND ESPACE 4"]
+df.modele_com = df.modele_com.replace(mod1, "CLIO 2")
+df.modele_com = df.modele_com.replace(mod2, "CLIO 2")
+df.modele_com = df.modele_com.replace(mod3, "CLIO 2")
+df.modele_com = df.modele_com.replace(mod4, "CLIO 2")
+df.modele_com = df.modele_com.replace(autre, "autre")
+'''
 
 
 
@@ -345,5 +359,16 @@ from scipy import stats
 valmax=df[u'prix_vente'].quantile(0.9999999999999)
 print(valmax)
 '''
-#print(df)
+#Verification des mdalites
+from numpy import unique
+modalite=unique(df["modele_com"])
+modalite1=unique(df["horsepower"])
+modalite2=unique(df["couleur"])
+modalite3=unique(df["departement"])
+modalite4=unique(df["energie"])
+modalite5=unique(df["porte"])
+modalite6=unique(df["boite_de_vitesse"])
+modalite7=unique(df["premiere_main"])
+print(modalite2)
+
 #df.to_csv('/Users/famille//projetstat/.aws/automobile.csv')
