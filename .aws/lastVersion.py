@@ -8,9 +8,8 @@ import matplotlib
 import s3fs
 #import nltk
 #probleme cet import
-#df = pd.read_csv("s3://projet-stat-ensai/Lacentrale.csv",sep=';', dtype=str)
-df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
-#df = pd.read_csv("/Users/famille//projetstat/.aws/aws_automobile.csv",error_bad_lines=False,index_col=0)
+#df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
+df = pd.read_csv("/Users/famille//projetstat/.aws/aws_automobile.csv",error_bad_lines=False,index_col=0)
 #print(df.shape)
 #print(df.head())
 #print(df.columns)
@@ -158,6 +157,7 @@ df.modele_com = df.modele_com.replace(autre, "autre")
 
 
 
+
 #valeurs manquantes
 #Detection des valeurs manquantes:
 #df[u'horsepower']=pd.to_numeric(df[u'horsepower'], downcast='integer')
@@ -293,8 +293,8 @@ df3[["horsepower", "engine","puissance_fiscale"]] = df3[["horsepower", "engine",
 
 df= pd.concat([df1,df2,df3], ignore_index=True)
 '''
-print(df.isna().sum())
-print(df.head())
+
+
 
 
 #Analyse descriptive
@@ -369,7 +369,7 @@ modalite4=unique(df["energie"])
 modalite5=unique(df["porte"])
 modalite6=unique(df["boite_de_vitesse"])
 modalite7=unique(df["premiere_main"])
-print(modalite4)
-
+print(modalite2)
+print(df.head())
 
 #df.to_csv('/Users/famille//projetstat/.aws/automobile.csv')
