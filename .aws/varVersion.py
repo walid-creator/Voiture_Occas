@@ -6,11 +6,11 @@ import pandas as pd
 
 #Importation de la base de données:
 #df = pd.read_csv("s3://projet-stat-ensai/Lacentrale.csv",sep=';', dtype=str)
-df1 = pd.read_csv(".aws/automobile.csv",error_bad_lines=False,index_col=0)
+df = pd.read_csv(".aws/automobile.csv",error_bad_lines=False,index_col=0)
 #Traitement de la variable version
 
 #Traitement des valeurs manquantes :
-df1['version'] = df['version'].fillna("")
+df['version'] = df['version'].fillna("")
 
 #Récupération de la colonne version:
 Version = df1["version"]
@@ -35,7 +35,7 @@ def Recuperation_generation_voiture():
 L = Recuperation_generation_voiture()
 
 #Ajout de la colonne génération au data frame:
-df1["generation"] = pd.Series(L, index = df.index)
+df["generation"] = pd.Series(L, index = df.index)
 
 #Ajout d'une colonne type de moteur à la base de données:
 
@@ -52,7 +52,7 @@ def Recuperation_type_de_moteur():
     return(L)
 
 L_Moteur = Recuperation_type_de_moteur()
-df1["type_moteur"] = pd.Series(L_Moteur, index = df.index)
+df["type_moteur"] = pd.Series(L_Moteur, index = df.index)
 
 
 def Recuperation_finition():
@@ -108,7 +108,7 @@ def Recuperation_finition():
     return(L)
 
 L_Finition = Recuperation_finition()
-df1["Finition"] = pd.Series(L_Finition, index = df.index)
+df["Finition"] = pd.Series(L_Finition, index = df.index)
 
 def Recuperation_cylindree():
     n = len(Version)
@@ -137,8 +137,8 @@ def Recuperation_cylindree():
     return(L)
 
 L_Cyl = Recuperation_cylindree()
-df1["Cylindree"] = pd.Series(L_Cyl, index = df.index)
+df["Cylindree"] = pd.Series(L_Cyl, index = df.index)
 
 #Ajout des variables de version au data frame traité par Walid.
 
-df1.to_csv(".aws/automobile.csv")
+df.to_csv(".aws/automobile.csv")
