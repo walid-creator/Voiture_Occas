@@ -352,16 +352,10 @@ from scipy import stats
 #plt.show()
 '''
 
-#valeurs influentes
-'''
-#print(df.shape)#52513x26
 
-valmax=df[u'prix_vente'].quantile(0.9999999999999)
-print(valmax)
-'''
-#Verification des mdalites
+#Verification des modalites
 from numpy import unique
-modalite=unique(df["modele_com"])
+#modalite=unique(df["modele_com"])
 modalite1=unique(df["horsepower"])
 modalite2=unique(df["couleur"])
 modalite3=unique(df["departement"])
@@ -373,14 +367,25 @@ modalite7=unique(df["premiere_main"])
 #print(df.head())
 
 #unifomisation de couleur non encore termine
-"""
+
 eff = df["couleur"].value_counts()
 pourcent = df["couleur"].value_counts(normalize = True)
 eff = pd.concat([eff, pourcent], axis = "columns")
 pourcent_col=pd.DataFrame(list(pourcent.items()),columns=['couleur','pourcentage'])
 couleurs = pourcent_col[ pourcent_col["pourcentage"]<0.01].couleur
 print(couleurs)
-"""
+
+indexNames1=[]
+for nom in couleurs:
+    indexNames1.append( df[ df["couleur"] == nom].index)
+print(indexNames1[0])
+print(indexNames1[1])
+df["couleur"].drop(indexNames1, inplace=True)
+from numpy import unique
+x=unique(df["couleur"])
+print(x)
+
+
 #=> pres de 500 couleurs dont le pourcentage est inferieur à 1%
 
 #print(df[df["couleur"]=='verte fonc\xc3\xa9e plate'].prix_vente)
