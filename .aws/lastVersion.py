@@ -126,15 +126,17 @@ df.loc[df["energie"] == "Diesel","energie"] = "diesel"
 df.loc[df["energie"] == "Electrique","energie"] = "electrique"
 df.loc[df["energie"] == "Essence","energie"] = "essence"
 df.loc[df["energie"] == "Hybride essence électrique","energie"] = "heelect"
-from numpy import unique
+
+
 # Get names of indexes for which column Stock has value : 'Bicarburation essence GPL','Bicarburation essence bio\xc3\xa9thanol','Biocarburant'
 indexNames1 = df[ df["energie"] == 'Bicarburation essence GPL'].index
-indexNames2 = df[ df["energie"] == 'Bicarburation essence bio\xc3\xa9thanol'].index
+indexNames2 = df[ df["energie"] == 'Bicarburation essence bioéthanol'].index
 indexNames3 = df[ df["energie"] == 'Biocarburant'].index
 # Delete these row indexes from dataFrame
-df["energie"].drop(indexNames1, inplace=True)
-df["energie"].drop(indexNames2, inplace=True)
-df["energie"].drop(indexNames3, inplace=True)
+print(indexNames1)
+df.drop(indexNames1, inplace=True)
+df.drop(indexNames2, inplace=True)
+df.drop(indexNames3, inplace=True)
 '''
 
 #uniformisation de la variable model_com
@@ -363,11 +365,11 @@ modalite4=unique(df["energie"])
 modalite5=unique(df["porte"])
 modalite6=unique(df["boite_de_vitesse"])
 modalite7=unique(df["premiere_main"])
-#print(modalite2)
+print(modalite4)
 #print(df.head())
 
 #unifomisation de couleur non encore termine
-
+'''
 eff = df["couleur"].value_counts()
 pourcent = df["couleur"].value_counts(normalize = True)
 eff = pd.concat([eff, pourcent], axis = "columns")
@@ -384,7 +386,7 @@ df["couleur"].drop(indexNames1, inplace=True)
 from numpy import unique
 x=unique(df["couleur"])
 print(x)
-
+'''
 
 #=> pres de 500 couleurs dont le pourcentage est inferieur à 1%
 
@@ -393,4 +395,4 @@ print(x)
 
 
 
-#df.to_csv('/Users/famille//projetstat/.aws/automobile.csv')
+df.to_csv('/Users/famille//projetstat/.aws/automobile.csv')
