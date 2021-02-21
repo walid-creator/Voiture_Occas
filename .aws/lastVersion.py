@@ -336,18 +336,24 @@ import numpy as np
 '''
 
 #correlation entres variables quantitatives et le prix
-'''
+
 print(df[[u"kilometrage", u"prix_vente"]].corr())#il est bien negative mais faible 0.051
 print(df[[u"puissance_fiscale", u"prix_vente"]].corr())#0.022
 print(df[[u"horsepower", u"prix_vente"]].corr())#0.035
-print(df[[u"AgeAnnee", u"prix_vente"]].corr())# 0.048
-'''
+print(df[[u"age", u"prix_vente"]].corr())# -0.04
+print(df[[u"prix_vente", u"engine"]].corr())# -0.04
+print(df[[u"age", u"kilometrage",u"puissance_fiscale",u"horsepower","engine"]].corr())#forte corrélation:age&kilometrage=0.76 et puissance_fiscale&horsepower=0.85
 
 #correlation entres variables qualitatives et le prix
 '''
 from scipy import stats
-#pearson_coef, p_value = stats.pearsonr(df[u"AgeAnnee"], df[u"prix_vente"])
-#print("The Pearson Correlation Coefficient is", pearson_coef, " with a P-value of P =", p_value)
+table=pd.crosstab(df[u"energie"],df[u"prix_vente"])
+x=stats.chi2_contingency(table)
+print("la stat de test est = ", x[0], " with a P-value of P =", x[1])
+'''
+#
+
+'''
 #print(df['couleur'].value_counts().to_frame())
 #sns.boxplot(x=u"premiere_main", y=u"prix_vente", data=df)
 #sns.boxplot(df[u"prix_vente"])
@@ -358,14 +364,14 @@ from scipy import stats
 #Verification des modalites
 from numpy import unique
 #modalite=unique(df["modele_com"])
-modalite1=unique(df["horsepower"])
-modalite2=unique(df["couleur"])
-modalite3=unique(df["departement"])
-modalite4=unique(df["energie"])
-modalite5=unique(df["porte"])
-modalite6=unique(df["boite_de_vitesse"])
-modalite7=unique(df["premiere_main"])
-print(modalite4)
+#modalite1=unique(df["horsepower"])
+#modalite2=unique(df["couleur"])
+#modalite3=unique(df["departement"])
+#modalite4=unique(df["energie"])
+#modalite5=unique(df["porte"])
+#modalite6=unique(df["boite_de_vitesse"])
+#modalite7=unique(df["premiere_main"])
+#print(modalite4)
 #print(df.head())
 
 #unifomisation de couleur non encore termine
@@ -395,4 +401,4 @@ print(x)
 
 
 
-df.to_csv('/Users/famille//projetstat/.aws/automobile.csv')
+#df.to_csv('/Users/famille//projetstat/.aws/automobile.csv')

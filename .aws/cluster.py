@@ -12,36 +12,31 @@ df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_line
 
 from numpy import unique
 
-#### Extraction des variables qualitative
+#### Extraction des variables qualitative et quantitative
 vsQual = df[["modele_com","energie","boite_de_vitesse","premiere_main","departement", "porte"]]
-print(df[["modele_com"]])
-Quanti=df[[u'horsepower',u'engine', "puissance_fiscale",u'kilometrage']]
+Quanti=df[[u'horsepower',u'engine',"age"]]# horsepower et age plus corrélé au prix
 #vs=df[["modele_com","energie","boite_de_vitesse","premiere_main","departement", "porte","age","kilometrage"]].dropna()
 ######fadm
 
 
 
-
-#mod=unique(df[["modele_com"]])
-#print(mod)
-print(df[df["modele_com"]=='autre'].prix_vente)
 # Suppression des variables département et porte et des valeurs manquantes
-Qual = vsQual.drop(["departement", "porte"], axis = "columns").dropna()
+Qual = vsQual.drop(["departement","porte"], axis = "columns").dropna()
 Quanti = Quanti.dropna()
 #print(Qual.isna().sum())
 
-# ACM
+# ACM et ACP
 from prince import MCA
 from prince import PCA
-mca = MCA(n_components = 6, copy=True,check_input=True,engine='auto',random_state=1) #M-p puis >1/p
-pca=PCA(n_components = 3, copy=True,check_input=True,engine='auto',random_state=1)
+mca = MCA(n_components =4, copy=True,check_input=True,engine='auto',random_state=1) #M-p puis >1/p
+pca=PCA(n_components = 3, copy=True,check_input=True,engine='auto',random_state=1) #>1/p
 mca = mca.fit(Qual)
 pca=pca.fit(Quanti)
 #famd = prince.FAMD(n_components=2,n_iter=3,copy=True,check_input=True,engine='auto',random_state=42)
 #famd = famd.fit(vs)
 # Nombre de composents:
 p = mca.n_components
-p1=3
+p1= pca.n_components
 #print(p)
 
 # Valeurs propres MCA et PCA
@@ -60,32 +55,35 @@ inertiadf1 = pd.DataFrame(inertia1, columns = ["inertia"], index = ["Dim {}".for
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+print(eigendf)
 print(eigendf1)
+print(inertiadf)
 print(inertiadf1)
-'''
 ax = mca.plot_coordinates(
 X=Qual,
 ax=None,
 figsize=(6, 6),
-show_row_points=True,
+show_row_points=False,
 row_points_size=10,
 show_row_labels=False,
 show_column_points=True,
-column_points_size=30,
+column_points_size=10,
 show_column_labels=False,
 legend_n_cols=1)
 plt.show()
-'''
+
+
+
 # Coordonnées des individus
 rowCoord = mca.row_coordinates(Qual)
 rowCoord1 = pca.row_coordinates(Quanti)
-rowCoord.columns = ['axe1','axe2','axe3','axe4','axe5','axe6']
-rowCoord1.columns = ['axe7','axe8','axe9']
+rowCoord.columns = ['axe1','axe2','axe3','axe4']
+rowCoord1.columns = ['axe5','axe6','axe7']
 rowCoord = pd.concat([rowCoord, rowCoord1], axis = "columns")
 rowCoord=rowCoord.dropna()# car ce n'est pas les mêmes valeurs manquantes entre les 2 dataframe
-print(rowCoord.head())
+#print(rowCoord.head())
 
-print(rowCoord.shape)
+#print(rowCoord.shape)
 
 
 from sklearn.cluster import KMeans
@@ -114,12 +112,12 @@ plt.show()
 
 
 #centrer et reduire
-'''
+
 scaler = MinMaxScaler()
 
 scaler.fit(rowCoord)
 scaler.transform(rowCoord)
-'''
+
 #methode des kmeans pour chaque choix de nbr de clusters
 #choix de k
 #acp et acm font ca
@@ -142,14 +140,15 @@ y_predicted = km.fit_predict(rowCoord)
 #y_predicted1 = km.fit_predict(rowCoord1)
 rowCoord['cluster']=y_predicted
 #rowCoord1['cluster']=y_predicted1
-print(km.cluster_centers_) # centres des classes
+#print(km.cluster_centers_) # centres des classes
 
 #construire chaque dataframe et repre graphique
 df1 = rowCoord[rowCoord.cluster==0]
 df2 = rowCoord[rowCoord.cluster==1]
 df3 = rowCoord[rowCoord.cluster==2]
+df4 = rowCoord[rowCoord.cluster==3]
+df5 = rowCoord[rowCoord.cluster==4]
 
-#df4 = quanti[quanti.cluster==3]
 
 
 #represent graphique:
