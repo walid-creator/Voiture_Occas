@@ -335,22 +335,24 @@ import numpy as np
 #plt.title(u"prix_vente")
 '''
 
-#correlation entres variables quantitatives et le prix
-
+#correlation entre variables quantitatives et le prix
+'''
 print(df[[u"kilometrage", u"prix_vente"]].corr())#il est bien negative mais faible 0.051
 print(df[[u"puissance_fiscale", u"prix_vente"]].corr())#0.022
 print(df[[u"horsepower", u"prix_vente"]].corr())#0.035
 print(df[[u"age", u"prix_vente"]].corr())# -0.04
 print(df[[u"prix_vente", u"engine"]].corr())# -0.04
 print(df[[u"age", u"kilometrage",u"puissance_fiscale",u"horsepower","engine"]].corr())#forte corrélation:age&kilometrage=0.76 et puissance_fiscale&horsepower=0.85
+'''
+#correlation entres variables qualitatives
 
-#correlation entres variables qualitatives et le prix
-'''
 from scipy import stats
-table=pd.crosstab(df[u"energie"],df[u"prix_vente"])
+table=pd.crosstab(df[u"energie"],df[u"porte"])
+print(table)
 x=stats.chi2_contingency(table)
-print("la stat de test est = ", x[0], " with a P-value of P =", x[1])
-'''
+print("la stat de test est = ", x[0], " with a P-value of P =", x[1], "nbr de degrès de libertés =", x[2])
+#le chi2 théorique est égale à 7,82 pour 3 degrès de libertés => on rejète
+
 #
 
 '''
@@ -365,13 +367,13 @@ print("la stat de test est = ", x[0], " with a P-value of P =", x[1])
 from numpy import unique
 #modalite=unique(df["modele_com"])
 #modalite1=unique(df["horsepower"])
-#modalite2=unique(df["couleur"])
+modalite2=unique(df["couleur"])
 #modalite3=unique(df["departement"])
 #modalite4=unique(df["energie"])
 #modalite5=unique(df["porte"])
 #modalite6=unique(df["boite_de_vitesse"])
 #modalite7=unique(df["premiere_main"])
-#print(modalite4)
+print(modalite2)
 #print(df.head())
 
 #unifomisation de couleur non encore termine

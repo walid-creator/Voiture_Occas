@@ -68,7 +68,7 @@ row_points_size=10,
 show_row_labels=False,
 show_column_points=True,
 column_points_size=10,
-show_column_labels=False,
+show_column_labels=True,
 legend_n_cols=1)
 plt.show()
 
@@ -170,7 +170,7 @@ plt.show()
 
 
 
- #librairies pour la CAH
+#librairies pour la CAH
  
  
  
