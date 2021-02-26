@@ -111,6 +111,51 @@ for j in range(df.shape[0]):
     if type(df[u'couleur'][j])==str:
         if df[u'couleur'][j][0:2] == "n1":
             df[u'couleur'][j]='autre'
+'''
+#PAS ENCORE executé
+'''
+df[u"couleur"].replace('1602832gris fonce', "noir",inplace= True)
+df['couleur'] = df['couleur'].str.replace(u"é", "e")
+df['couleur'] = df['couleur'].str.replace(u"É", "e")
+df[u"couleur"].replace('9458blanc gl', "blanc",inplace= True)
+
+for j in df.index:
+    if type(df[u'couleur'][j])==str and df[u'couleur'][j][0:4]=="gris":
+        df[u'couleur'][j]="gris"
+    elif  df[u'couleur'][j][0:3]=="noi"or df[u'couleur'][j][0:5]=="negro":
+        df[u'couleur'][j] = "noir"
+    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:5]=="blanc":
+        df[u'couleur'][j] = "blanc"
+    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:5]=="beige":
+        df[u'couleur'][j] = "beige"
+    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:4]=="bleu":
+        df[u'couleur'][j] = "bleu"
+    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:6]=="orange":
+        df[u'couleur'][j] = "orange"
+    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:6]=="marron":
+        df[u'couleur'][j] = "marron"
+    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:6]=="violet":
+        df[u'couleur'][j] = "violet"
+    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:4]=="vert":
+        df[u'couleur'][j] = "vert"
+    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:5]=="rouge":
+        df[u'couleur'][j] = "rouge"
+    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:5]=="jaune":
+        df[u'couleur'][j] = "rouge"
+    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:6]=="platin":
+        df[u'couleur'][j] = "platine"
+    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:4]=="tita":
+        df[u'couleur'][j] = "titane"
+'''
+#unifomisation de couleur non encore termine
+'''
+eff = df["couleur"].value_counts()
+pourcent = df["couleur"].value_counts(normalize = True)
+eff = pd.concat([eff, pourcent], axis = "columns")
+pourcent_col=pd.DataFrame(list(pourcent.items()),columns=['couleur','pourcentage'])
+couleurs = pourcent_col[ pourcent_col["pourcentage"]<0.01].couleur
+for nom in couleurs:
+    df["couleur"].replace(nom, "autre",inplace=True)
 
 '''
 ## Uniformisation de la variable boite_de_vitesse
@@ -187,6 +232,7 @@ print(valManCoul)
 #quanti=df[["kilometrage","age"]]#sans aleurs manquantes
 
 from sklearn.cluster import KMeans
+import pandas as pd
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib
@@ -314,8 +360,9 @@ print(df['prix_vente'].astype('float').std(axis=0))# ecrart type au sens statist
 #la moyenne et la mediane sont proches
 #un ecrat type trop grand de 55622
 #ou
-print(df.describe())
 '''
+print(df["prix_vente"].describe())
+
 
 
 #reprensentation graphique pour les differentes correlations qualitatives
@@ -345,14 +392,14 @@ print(df[[u"prix_vente", u"engine"]].corr())# -0.04
 print(df[[u"age", u"kilometrage",u"puissance_fiscale",u"horsepower","engine"]].corr())#forte corrélation:age&kilometrage=0.76 et puissance_fiscale&horsepower=0.85
 '''
 #correlation entres variables qualitatives
-
+'''
 from scipy import stats
 table=pd.crosstab(df[u"energie"],df[u"porte"])
 print(table)
 x=stats.chi2_contingency(table)
 print("la stat de test est = ", x[0], " with a P-value of P =", x[1], "nbr de degrès de libertés =", x[2])
 #le chi2 théorique est égale à 7,82 pour 3 degrès de libertés => on rejète
-
+'''
 #
 
 '''
@@ -367,39 +414,15 @@ print("la stat de test est = ", x[0], " with a P-value of P =", x[1], "nbr de de
 from numpy import unique
 #modalite=unique(df["modele_com"])
 #modalite1=unique(df["horsepower"])
-modalite2=unique(df["couleur"])
+#modalite2=unique(df["couleur"])
 #modalite3=unique(df["departement"])
 #modalite4=unique(df["energie"])
 #modalite5=unique(df["porte"])
 #modalite6=unique(df["boite_de_vitesse"])
 #modalite7=unique(df["premiere_main"])
-print(modalite2)
+#print(modalite2)
 #print(df.head())
 
-#unifomisation de couleur non encore termine
-'''
-eff = df["couleur"].value_counts()
-pourcent = df["couleur"].value_counts(normalize = True)
-eff = pd.concat([eff, pourcent], axis = "columns")
-pourcent_col=pd.DataFrame(list(pourcent.items()),columns=['couleur','pourcentage'])
-couleurs = pourcent_col[ pourcent_col["pourcentage"]<0.01].couleur
-print(couleurs)
-
-indexNames1=[]
-for nom in couleurs:
-    indexNames1.append( df[ df["couleur"] == nom].index)
-print(indexNames1[0])
-print(indexNames1[1])
-df["couleur"].drop(indexNames1, inplace=True)
-from numpy import unique
-x=unique(df["couleur"])
-print(x)
-'''
-
-#=> pres de 500 couleurs dont le pourcentage est inferieur à 1%
-
-#print(df[df["couleur"]=='verte fonc\xc3\xa9e plate'].prix_vente)
-#print(df[df["couleur"]=='rouge normale m\xc3\xa9t.'].prix_vente)
 
 
 

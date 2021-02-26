@@ -9,6 +9,24 @@ import matplotlib
 #import nltk
 #probleme cet import
 df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
+#suppression de electrique et heelect
+indexNames1 = df[ df["energie"] == 'electrique'].index
+indexNames2 = df[ df["energie"] == 'heelect'].index
+print(df[ df["energie"] == 'electrique'].prix_vente)
+prix=df[ df["energie"] == 'heelect'].prix_vente
+prix=list(prix)
+#leurs prix sont proches de la moyenne des prix
+def mean(L):
+    s=0
+    for i in range(len(L)):
+        s=s+L[i]
+    return s/len(L)
+
+print(mean(prix))
+
+
+df.drop(indexNames1, inplace=True)
+df.drop(indexNames2, inplace=True)
 
 from numpy import unique
 
@@ -28,7 +46,8 @@ Quanti = Quanti.dropna()
 # ACM et ACP
 from prince import MCA
 from prince import PCA
-mca = MCA(n_components =4, copy=True,check_input=True,engine='auto',random_state=1) #M-p puis >1/p
+
+mca = MCA(n_components =4, copy=True,check_input=True,engine='auto',random_state=1,benzecri=False) #M-p puis >1/p
 pca=PCA(n_components = 3, copy=True,check_input=True,engine='auto',random_state=1) #>1/p
 mca = mca.fit(Qual)
 pca=pca.fit(Quanti)
@@ -81,7 +100,8 @@ rowCoord.columns = ['axe1','axe2','axe3','axe4']
 rowCoord1.columns = ['axe5','axe6','axe7']
 rowCoord = pd.concat([rowCoord, rowCoord1], axis = "columns")
 rowCoord=rowCoord.dropna()# car ce n'est pas les mêmes valeurs manquantes entre les 2 dataframe
-#print(rowCoord.head())
+
+print(rowCoord.head())
 
 #print(rowCoord.shape)
 
@@ -135,7 +155,7 @@ plt.show()
 #par la methode du coude on trouve 2 ou 3 a tester
 #methode des kmeans
 
-km = KMeans(n_clusters=5)
+km = KMeans(n_clusters=4)
 y_predicted = km.fit_predict(rowCoord)
 #y_predicted1 = km.fit_predict(rowCoord1)
 rowCoord['cluster']=y_predicted
@@ -147,7 +167,6 @@ df1 = rowCoord[rowCoord.cluster==0]
 df2 = rowCoord[rowCoord.cluster==1]
 df3 = rowCoord[rowCoord.cluster==2]
 df4 = rowCoord[rowCoord.cluster==3]
-df5 = rowCoord[rowCoord.cluster==4]
 
 
 
