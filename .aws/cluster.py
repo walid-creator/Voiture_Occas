@@ -16,13 +16,7 @@ print(df[ df["energie"] == 'electrique'].prix_vente)
 prix=df[ df["energie"] == 'heelect'].prix_vente
 prix=list(prix)
 #leurs prix sont proches de la moyenne des prix
-def mean(L):
-    s=0
-    for i in range(len(L)):
-        s=s+L[i]
-    return s/len(L)
-
-print(mean(prix))
+#print(sum(prix)/len(prix))
 
 
 df.drop(indexNames1, inplace=True)
@@ -30,17 +24,17 @@ df.drop(indexNames2, inplace=True)
 
 from numpy import unique
 
-#### Extraction des variables qualitative et quantitative
+#### Extraction des variables qualitatives et quantitatives
 vsQual = df[["modele_com","energie","boite_de_vitesse","premiere_main","departement", "porte"]]
 Quanti=df[[u'horsepower',u'engine',"age"]]# horsepower et age plus corrélé au prix
 #vs=df[["modele_com","energie","boite_de_vitesse","premiere_main","departement", "porte","age","kilometrage"]].dropna()
 ######fadm
 
 
-
 # Suppression des variables département et porte et des valeurs manquantes
 Qual = vsQual.drop(["departement","porte"], axis = "columns").dropna()
 Quanti = Quanti.dropna()
+print(Quanti.describe())
 #print(Qual.isna().sum())
 
 # ACM et ACP
