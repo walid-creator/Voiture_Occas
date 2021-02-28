@@ -64,6 +64,22 @@ import numpy as np
 df.drop([u'type', u'marque',u'modele'], axis=1, inplace=True)
 '''
 
+#valeurs manquantes
+#Detection des valeurs manquantes:
+#df[u'horsepower']=pd.to_numeric(df[u'horsepower'], downcast='integer')
+#sans:u'prix_vente',u'departement'(a discretiser),u'energie', u'kilometrage'
+#avec:  modele_com(998),u'horsepower'(NaN)(750),engine(890),u'porte'(NaN)(4),options:1928,couleur(5),u'puissance_fiscale'(NaN)(3)
+#verifier la presence de val manquantes et les chercher:
+'''
+print(df.isna().sum())
+
+print(df.isnull().sum())
+valManCoul=[]
+for i in range(df.shape[0]):
+    if df[u'couleur'].isnull()[i]==True:
+       print(i)
+print(valManCoul)
+'''
 
 
 
@@ -117,6 +133,7 @@ for j in range(df.shape[0]):
             df[u'couleur'][j]='autre'
 '''
 #détection des couleurs au milieu de la chaine de caractère
+
 for j in df.index.tolist():
     if "noir" in df[u'couleur'][j].strip(".").split():
         df[u'couleur'][j]='noir'
@@ -173,7 +190,7 @@ for j in df.index:
         df[u'couleur'][j] = "titane"
 
 #unifomisation de couleur non encore termine
-
+'''
 eff = df["couleur"].value_counts()
 pourcent = df["couleur"].value_counts(normalize = True)
 eff = pd.concat([eff, pourcent], axis = "columns")
@@ -181,7 +198,7 @@ pourcent_col=pd.DataFrame(list(pourcent.items()),columns=['couleur','pourcentage
 couleurs = pourcent_col[ pourcent_col["pourcentage"]<0.01].couleur
 for nom in couleurs:
     df["couleur"].replace(nom, "autre",inplace=True)
-
+'''
 ## Uniformisation de la variable boite_de_vitesse
 """
 df["boite_de_vitesse"] = df["boite_de_vitesse"].replace(["mÃ©canique", "mécanique"], "meca")
@@ -229,22 +246,7 @@ df.modele_com = df.modele_com.replace(autre, "autre")
 
 
 
-#valeurs manquantes
-#Detection des valeurs manquantes:
-#df[u'horsepower']=pd.to_numeric(df[u'horsepower'], downcast='integer')
-#sans:u'prix_vente',u'departement'(a discretiser),u'energie', u'kilometrage'
-#avec:  modele_com(998),u'horsepower'(NaN)(750),engine(890),u'porte'(NaN)(4),options:1928,couleur(5),u'puissance_fiscale'(NaN)(3)
-#verifier la presence de val manquantes et les chercher:
-'''
-print(df.isna().sum())
 
-print(df.isnull().sum())
-valManCoul=[]
-for i in range(df.shape[0]):
-    if df[u'couleur'].isnull()[i]==True:
-       print(i)
-print(valManCoul)
-'''
 
 
 
