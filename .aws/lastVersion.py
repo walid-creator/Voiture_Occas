@@ -84,6 +84,7 @@ df[u"couleur"].replace("grise", "gris",inplace= True)
 df[u"couleur"].replace("roue flamme", "rouge flamme",inplace= True)
 df[u"couleur"].replace("blnache", "blanc",inplace= True)
 df[u"couleur"].replace("*lanc", "blanc",inplace= True)
+
 #valeur manquantes de couleur:
 df[u"couleur"] = df[u"couleur"].fillna("autre")
 df[u"couleur"].replace("2017el50360", "autre",inplace= True)
@@ -104,7 +105,10 @@ df[u"couleur"].replace("nc", "autre",inplace= True)
 df[u"couleur"].replace("neutre.", "autre",inplace= True)
 df[u"couleur"].replace("xx", "autre",inplace= True)
 df[u"couleur"].replace("rqh", "autre",inplace= True)
-df[u"couleur"].replace("non condifiee", "autre",inplace= True)
+'''
+df[u"couleur"].replace("non codifiee", "autre",inplace= True)
+df[u"couleur"].replace("non codifie", "autre",inplace= True)
+'''
 df[u"couleur"].replace("non renseigne", "autre",inplace= True)
 df[u"couleur"].replace('autre / non affect\xc3\xa9', "autre",inplace= True)
 for j in range(df.shape[0]):
@@ -112,43 +116,64 @@ for j in range(df.shape[0]):
         if df[u'couleur'][j][0:2] == "n1":
             df[u'couleur'][j]='autre'
 '''
+#détection des couleurs au milieu de la chaine de caractère
+for j in df.index.tolist():
+    if "noir" in df[u'couleur'][j].strip(".").split():
+        df[u'couleur'][j]='noir'
+    elif "rouge" in df[u'couleur'][j].strip(".").split():
+        df[u'couleur'][j]='rouge'
+    elif "jaune" in df[u'couleur'][j].strip(".").split():
+        df[u'couleur'][j]='jaune'
+    elif "gris" in df[u'couleur'][j].strip(".").split():
+        df[u'couleur'][j]='gris'
+    elif "blanc" in df[u'couleur'][j].strip(".").split():
+        df[u'couleur'][j]='blanc'
+    elif "rouge" in df[u'couleur'][j].strip(".").split():
+        df[u'couleur'][j]='rouge'
+    elif "bleu" in df[u'couleur'][j].strip(".").split():
+        df[u'couleur'][j]='bleu'
+
 #PAS ENCORE executé
-'''
-df[u"couleur"].replace('1602832gris fonce', "noir",inplace= True)
+df[u"couleur"].replace('1602832gris fonce', "gris",inplace= True)
 df['couleur'] = df['couleur'].str.replace(u"é", "e")
 df['couleur'] = df['couleur'].str.replace(u"É", "e")
 df[u"couleur"].replace('9458blanc gl', "blanc",inplace= True)
-
+df[u"couleur"].replace('orance valencia', "orange",inplace= True)
+df[u"couleur"].replace('nior etoile', "noir",inplace= True)
+df[u"couleur"].replace('black', "noir",inplace= True)
+df[u"couleur"].replace('lanc glacier', "blanc",inplace= True)
 for j in df.index:
-    if type(df[u'couleur'][j])==str and df[u'couleur'][j][0:4]=="gris":
+    if df[u'couleur'][j][0:4]=="gris":
         df[u'couleur'][j]="gris"
-    elif  df[u'couleur'][j][0:3]=="noi"or df[u'couleur'][j][0:5]=="negro":
+    elif  df[u'couleur'][j][0:3]=="noi":
         df[u'couleur'][j] = "noir"
-    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:5]=="blanc":
+    elif df[u'couleur'][j][0:5]=="blanc":
         df[u'couleur'][j] = "blanc"
-    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:5]=="beige":
+    elif df[u'couleur'][j][0:5]=="beige":
         df[u'couleur'][j] = "beige"
-    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:4]=="bleu":
+    elif df[u'couleur'][j][0:4]=="bleu":
         df[u'couleur'][j] = "bleu"
-    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:6]=="orange":
+    elif df[u'couleur'][j][0:6]=="orange":
         df[u'couleur'][j] = "orange"
-    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:6]=="marron":
+    elif df[u'couleur'][j][0:2]=="or":
+        df[u'couleur'][j] = "or"
+    elif df[u'couleur'][j][0:6]=="marron":
         df[u'couleur'][j] = "marron"
-    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:6]=="violet":
+    elif df[u'couleur'][j][0:6]=="violet":
         df[u'couleur'][j] = "violet"
-    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:4]=="vert":
+    elif df[u'couleur'][j][0:4]=="vert":
         df[u'couleur'][j] = "vert"
-    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:5]=="rouge":
+    elif df[u'couleur'][j][0:4]=="roug":
         df[u'couleur'][j] = "rouge"
-    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:5]=="jaune":
-        df[u'couleur'][j] = "rouge"
-    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:6]=="platin":
+    elif df[u'couleur'][j][0:5]=="jaune":
+        df[u'couleur'][j] = "jaune"
+    elif df[u'couleur'][j][0:6]=="platin":
         df[u'couleur'][j] = "platine"
-    elif type(df[u'couleur'][j])==str and df[u'couleur'][j][0:4]=="tita":
+    elif df[u'couleur'][j][0:4]=="tita":
         df[u'couleur'][j] = "titane"
-'''
+
 #unifomisation de couleur non encore termine
-'''
+
 eff = df["couleur"].value_counts()
 pourcent = df["couleur"].value_counts(normalize = True)
 eff = pd.concat([eff, pourcent], axis = "columns")
@@ -157,7 +182,6 @@ couleurs = pourcent_col[ pourcent_col["pourcentage"]<0.01].couleur
 for nom in couleurs:
     df["couleur"].replace(nom, "autre",inplace=True)
 
-'''
 ## Uniformisation de la variable boite_de_vitesse
 """
 df["boite_de_vitesse"] = df["boite_de_vitesse"].replace(["mÃ©canique", "mécanique"], "meca")
@@ -224,123 +248,7 @@ print(valManCoul)
 
 
 
-#faire un clustering en utilisant les variables quantitatives
 
-
-
-
-#quanti=df[["kilometrage","age"]]#sans aleurs manquantes
-
-from sklearn.cluster import KMeans
-import pandas as pd
-import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
-import matplotlib
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
-#nuage de points
-#indexNames= quanti[ quanti['prix_vente']>0.8*10**7].index
-
-# Delete these row indexes from dataFrame
-'''
-quanti.drop(indexNames, inplace=True)
-print(quanti)
-plt.scatter(quanti['age'],quanti['prix_vente'])
-plt.xlabel('Age')
-plt.ylabel('prix_vente')
-plt.show()
-'''
-
-#centrer et reduire
-''''
-scaler = MinMaxScaler()
-#scaler.fit(quanti[[]])
-#quanti["prix_vente"] = scaler.transform(quanti[['prix_vente']])
-'''
-'''
-scaler.fit(df[['age']])
-df['age'] = scaler.transform(df[['age']])
-
-scaler.fit(df[['kilometrage']])
-df['kilometrage'] = scaler.transform(df[['kilometrage']])
-
-#methode des kmeans pour chaque choix de nbr de clusters
-#choix de k
-
-sse = []
-k_rng = range(1,10)
-for k in k_rng:
-    km = KMeans(n_clusters=k)
-    km.fit(df[['age','kilometrage']])
-    sse.append(km.inertia_)
-
-plt.xlabel('K')
-plt.ylabel('Sum of squared error')
-plt.plot(k_rng, sse)
-plt.show()
-#par la methode du coude on trouve 2 ou 3 a tester
-#methode des kmeans
-
-km = KMeans(n_clusters=3)
-y_predicted = km.fit_predict(df[['age','kilometrage']])
-y_predicted
-df['cluster']=y_predicted
-
-print(km.cluster_centers_) # centres des classes 
-
-#construire chaque dataframe et repre graphique
-df1 = df[df.cluster==0]
-df2 = df[df.cluster==1]
-df3 = df[df.cluster==2]
-print(df3["couleur"].mode())
-#df4 = quanti[quanti.cluster==3]
-plt.scatter(df1.age,df1['kilometrage'],color='green')
-plt.scatter(df2.age,df2['kilometrage'],color='red')
-plt.scatter(df3.age,df3['kilometrage'],color='black')
-#plt.scatter(df4.age,df4['kilometrage'],color='yellow')
-plt.scatter(km.cluster_centers_[:,0],km.cluster_centers_[:,1],color='purple',marker='*',label='centroid')
-plt.xlabel('age')
-plt.ylabel('kilometrage')
-plt.show()
-#print(df1.shape)#(17823, 3)
-#print(df2.shape)#(17823, 3)
-#print(df3.shape)#(27575, 3)
-##print(df4.shape)###(2024, 3)
-
-
-#imputation par le mode
-
-df1[["modele_com","boite_de_vitesse", "porte"]] = df1[["modele_com","boite_de_vitesse", "porte"]].fillna(df1.mode)
-df2[["modele_com","boite_de_vitesse", "porte"]] = df2[["modele_com","boite_de_vitesse", "porte"]].fillna(df2.mode)
-df3[["modele_com","boite_de_vitesse", "porte"]] = df3[["modele_com","boite_de_vitesse", "porte"]].fillna(df3.mode)
-
-
-
-
-
-
-print(df1[u"couleur"].mode()[0])
-print(df2[u"couleur"].mode()[0])
-print(df3[u"couleur"].mode()[0])
-#imputation par le mode de la variable couleur
-df1["couleur"].replace("autre",df1[u"couleur"].mode,inplace= True)
-df2["couleur"].replace("autre",df2[u"couleur"].mode,inplace= True)
-df3["couleur"].replace("autre",df3[u"couleur"].mode,inplace= True)
-
-
-
-#imputation des variables quantitatives par la médiane:
-
-# Convertion en float
-df[["horsepower", "engine","puissance_fiscale"]] = df[["horsepower", "engine","puissance_fiscale"]].astype(float)
-# Remplacer NAN en utilisant la valeur médiane
-df1[["horsepower", "engine","puissance_fiscale"]] = df1[["horsepower", "engine","puissance_fiscale"]].fillna(df1[["horsepower", "engine","puissance_fiscale"]].median())
-df2[["horsepower", "engine","puissance_fiscale"]] = df2[["horsepower", "engine","puissance_fiscale"]].fillna(df2[["horsepower", "engine","puissance_fiscale"]].median())
-df3[["horsepower", "engine","puissance_fiscale"]] = df3[["horsepower", "engine","puissance_fiscale"]].fillna(df3[["horsepower", "engine","puissance_fiscale"]].median())
-
-
-df= pd.concat([df1,df2,df3], ignore_index=True)
-'''
 
 
 
@@ -414,13 +322,13 @@ print("la stat de test est = ", x[0], " with a P-value of P =", x[1], "nbr de de
 from numpy import unique
 #modalite=unique(df["modele_com"])
 #modalite1=unique(df["horsepower"])
-#modalite2=unique(df["couleur"])
+modalite2=unique(df["couleur"])
 #modalite3=unique(df["departement"])
 #modalite4=unique(df["energie"])
 #modalite5=unique(df["porte"])
 #modalite6=unique(df["boite_de_vitesse"])
 #modalite7=unique(df["premiere_main"])
-#print(modalite2)
+print(modalite2)
 #print(df.head())
 
 

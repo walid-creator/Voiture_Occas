@@ -212,3 +212,33 @@ idg = np.argsort(groupes_cah)
 print(pandas.DataFrame(Qual.index[idg],groupes_cah[idg]))
 
 '''
+
+
+
+#imputation par le mode
+
+df1[["modele_com","boite_de_vitesse", "porte"]] = df1[["modele_com","boite_de_vitesse", "porte"]].fillna(df1.mode)
+df2[["modele_com","boite_de_vitesse", "porte"]] = df2[["modele_com","boite_de_vitesse", "porte"]].fillna(df2.mode)
+df3[["modele_com","boite_de_vitesse", "porte"]] = df3[["modele_com","boite_de_vitesse", "porte"]].fillna(df3.mode)
+df4[["modele_com","boite_de_vitesse", "porte"]] = df4[["modele_com","boite_de_vitesse", "porte"]].fillna(df4.mode)
+
+#imputation par le mode de la variable couleur
+df1["couleur"].replace("autre",df1[u"couleur"].mode,inplace= True)
+df2["couleur"].replace("autre",df2[u"couleur"].mode,inplace= True)
+df3["couleur"].replace("autre",df3[u"couleur"].mode,inplace= True)
+df4["couleur"].replace("autre",df4[u"couleur"].mode,inplace= True)
+
+
+#imputation des variables quantitatives par la médiane:
+
+# Convertion en float
+df[["horsepower", "engine","puissance_fiscale"]] = df[["horsepower", "engine","puissance_fiscale"]].astype(float)
+# Remplacer NAN en utilisant la valeur médiane
+df1[["horsepower", "engine","puissance_fiscale"]] = df1[["horsepower", "engine","puissance_fiscale"]].fillna(df1[["horsepower", "engine","puissance_fiscale"]].median())
+df2[["horsepower", "engine","puissance_fiscale"]] = df2[["horsepower", "engine","puissance_fiscale"]].fillna(df2[["horsepower", "engine","puissance_fiscale"]].median())
+df3[["horsepower", "engine","puissance_fiscale"]] = df3[["horsepower", "engine","puissance_fiscale"]].fillna(df3[["horsepower", "engine","puissance_fiscale"]].median())
+df4[["horsepower", "engine","puissance_fiscale"]] = df4[["horsepower", "engine","puissance_fiscale"]].fillna(df4[["horsepower", "engine","puissance_fiscale"]].median())
+
+
+df= pd.concat([df1,df2,df3,df4], ignore_index=True)
+#df.to_csv('/Users/famille//projetstat/.aws/automobile.csv')
