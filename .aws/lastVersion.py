@@ -241,20 +241,6 @@ df.modele_com = df.modele_com.replace(autre, "autre")
 '''
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #Analyse descriptive
 '''
 print(df.loc[df[u'couleur'][0:5]=="blanc",:])
