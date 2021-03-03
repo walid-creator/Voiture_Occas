@@ -9,24 +9,25 @@ import matplotlib
 #import nltk
 #probleme cet import
 df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
-#suppression de electrique et heelect
-indexNames1 = df[ df["energie"] == 'electrique'].index
-indexNames2 = df[ df["energie"] == 'heelect'].index
-print(df[ df["energie"] == 'electrique'].prix_vente)
-prix=df[ df["energie"] == 'heelect'].prix_vente
+dftest = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
+#suppression de electrique et heelect dans l'acm
+indexNames1 = dftest[ dftest["energie"] == 'electrique'].index
+indexNames2 = dftest[ dftest["energie"] == 'heelect'].index
+print(dftest[ dftest["energie"] == 'electrique'].prix_vente)
+prix=dftest[ dftest["energie"] == 'heelect'].prix_vente
 prix=list(prix)
 #leurs prix sont proches de la moyenne des prix
 #print(sum(prix)/len(prix))
 
 
-df.drop(indexNames1, inplace=True)
-df.drop(indexNames2, inplace=True)
+dftest.drop(indexNames1, inplace=True)
+dftest.drop(indexNames2, inplace=True)
 
 from numpy import unique
 
 #### Extraction des variables qualitatives et quantitatives
-vsQual = df[["modele_com","energie","boite_de_vitesse","premiere_main","departement", "porte"]]
-Quanti=df[[u'horsepower',u'engine',"age"]]# horsepower et age plus corrélé au prix
+vsQual = dftest[["modele_com","energie","boite_de_vitesse","premiere_main","departement", "porte"]]
+Quanti=dftest[[u'horsepower',u'engine',"age"]]# horsepower et age plus corrélé au prix
 #vs=df[["modele_com","energie","boite_de_vitesse","premiere_main","departement", "porte","age","kilometrage"]].dropna()
 ######fadm
 
@@ -94,7 +95,7 @@ rowCoord.columns = ['axe1','axe2','axe3','axe4']
 rowCoord1.columns = ['axe5','axe6','axe7']
 rowCoord = pd.concat([rowCoord, rowCoord1], axis = "columns")
 rowCoord=rowCoord.dropna()# car ce n'est pas les mêmes valeurs manquantes entre les 2 dataframe
-
+dftest=dftest.dropna()
 print(rowCoord.head())
 
 #print(rowCoord.shape)
@@ -150,17 +151,25 @@ plt.show()
 #methode des kmeans
 
 km = KMeans(n_clusters=4)
+from sklearn.metrics import confusion_matrix
+classe1=km.fit(rowCoord)
+classe=classe1.labels_
+print(classe)
 y_predicted = km.fit_predict(rowCoord)
 #y_predicted1 = km.fit_predict(rowCoord1)
 rowCoord['cluster']=y_predicted
+dftest['cluster']=dftest
 #rowCoord1['cluster']=y_predicted1
 #print(km.cluster_centers_) # centres des classes
 
+
+
 #construire chaque dataframe et repre graphique
-df1 = rowCoord[rowCoord.cluster==0]
-df2 = rowCoord[rowCoord.cluster==1]
-df3 = rowCoord[rowCoord.cluster==2]
-df4 = rowCoord[rowCoord.cluster==3]
+
+df1 = dftest[dftest.cluster==0]
+df2 = dftest[dftest.cluster==1]
+df3 = dftest[dftest.cluster==2]
+df4 = dftest[dftest.cluster==3]
 
 
 
@@ -216,7 +225,7 @@ print(pandas.DataFrame(Qual.index[idg],groupes_cah[idg]))
 
 
 #imputation par le mode
-
+'''
 df1[["modele_com","boite_de_vitesse", "porte"]] = df1[["modele_com","boite_de_vitesse", "porte"]].fillna(df1.mode)
 df2[["modele_com","boite_de_vitesse", "porte"]] = df2[["modele_com","boite_de_vitesse", "porte"]].fillna(df2.mode)
 df3[["modele_com","boite_de_vitesse", "porte"]] = df3[["modele_com","boite_de_vitesse", "porte"]].fillna(df3.mode)
@@ -227,10 +236,10 @@ df1["couleur"].replace("autre",df1[u"couleur"].mode,inplace= True)
 df2["couleur"].replace("autre",df2[u"couleur"].mode,inplace= True)
 df3["couleur"].replace("autre",df3[u"couleur"].mode,inplace= True)
 df4["couleur"].replace("autre",df4[u"couleur"].mode,inplace= True)
-
+'''
 
 #imputation des variables quantitatives par la médiane:
-
+'''
 # Convertion en float
 df[["horsepower", "engine","puissance_fiscale"]] = df[["horsepower", "engine","puissance_fiscale"]].astype(float)
 # Remplacer NAN en utilisant la valeur médiane
@@ -241,4 +250,5 @@ df4[["horsepower", "engine","puissance_fiscale"]] = df4[["horsepower", "engine",
 
 
 df= pd.concat([df1,df2,df3,df4], ignore_index=True)
+'''
 #df.to_csv('/Users/famille//projetstat/.aws/automobile.csv')

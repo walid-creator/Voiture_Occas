@@ -8,8 +8,9 @@ import matplotlib
 import s3fs
 #import nltk
 #probleme cet import
-df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
+#df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
 #df = pd.read_csv("/Users/famille//projetstat/.aws/aws_automobile.csv",error_bad_lines=False,index_col=0)
+
 #print(df.shape)
 #print(df.head())
 #print(df.columns)
@@ -70,7 +71,7 @@ df.drop([u'type', u'marque',u'modele'], axis=1, inplace=True)
 #sans:u'prix_vente',u'departement'(a discretiser),u'energie', u'kilometrage'
 #avec:  modele_com(998),u'horsepower'(NaN)(750),engine(890),u'porte'(NaN)(4),options:1928,couleur(5),u'puissance_fiscale'(NaN)(3)
 #verifier la presence de val manquantes et les chercher:
-'''
+''''
 print(df.isna().sum())
 
 print(df.isnull().sum())
@@ -121,10 +122,10 @@ df[u"couleur"].replace("nc", "autre",inplace= True)
 df[u"couleur"].replace("neutre.", "autre",inplace= True)
 df[u"couleur"].replace("xx", "autre",inplace= True)
 df[u"couleur"].replace("rqh", "autre",inplace= True)
-'''
+
 df[u"couleur"].replace("non codifiee", "autre",inplace= True)
 df[u"couleur"].replace("non codifie", "autre",inplace= True)
-'''
+
 df[u"couleur"].replace("non renseigne", "autre",inplace= True)
 df[u"couleur"].replace('autre / non affect\xc3\xa9', "autre",inplace= True)
 for j in range(df.shape[0]):
@@ -133,7 +134,7 @@ for j in range(df.shape[0]):
             df[u'couleur'][j]='autre'
 '''
 #détection des couleurs au milieu de la chaine de caractère
-
+'''
 for j in df.index.tolist():
     if "noir" in df[u'couleur'][j].strip(".").split():
         df[u'couleur'][j]='noir'
@@ -150,7 +151,7 @@ for j in df.index.tolist():
     elif "bleu" in df[u'couleur'][j].strip(".").split():
         df[u'couleur'][j]='bleu'
 
-#PAS ENCORE executé
+
 df[u"couleur"].replace('1602832gris fonce', "gris",inplace= True)
 df['couleur'] = df['couleur'].str.replace(u"é", "e")
 df['couleur'] = df['couleur'].str.replace(u"É", "e")
@@ -188,7 +189,7 @@ for j in df.index:
         df[u'couleur'][j] = "platine"
     elif df[u'couleur'][j][0:4]=="tita":
         df[u'couleur'][j] = "titane"
-
+'''
 #unifomisation de couleur non encore termine
 '''
 eff = df["couleur"].value_counts()
@@ -198,6 +199,7 @@ pourcent_col=pd.DataFrame(list(pourcent.items()),columns=['couleur','pourcentage
 couleurs = pourcent_col[ pourcent_col["pourcentage"]<0.01].couleur
 for nom in couleurs:
     df["couleur"].replace(nom, "autre",inplace=True)
+print(df.couleur.value_counts())
 '''
 ## Uniformisation de la variable boite_de_vitesse
 """
@@ -310,13 +312,13 @@ print("la stat de test est = ", x[0], " with a P-value of P =", x[1], "nbr de de
 from numpy import unique
 #modalite=unique(df["modele_com"])
 #modalite1=unique(df["horsepower"])
-modalite2=unique(df["couleur"])
+#modalite2=unique(df["couleur"])
 #modalite3=unique(df["departement"])
 #modalite4=unique(df["energie"])
 #modalite5=unique(df["porte"])
 #modalite6=unique(df["boite_de_vitesse"])
 #modalite7=unique(df["premiere_main"])
-print(modalite2)
+#print(modalite2)
 #print(df.head())
 
 
