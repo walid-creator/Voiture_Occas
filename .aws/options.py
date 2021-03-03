@@ -65,29 +65,55 @@ options,op_par_voit = liste_options()
 fdist = FreqDist(options)
 freq_options = fdist.most_common(10)
 
-### Ajout des nouvelles options à la table
 
-for elt in freq_options :
-    op = elt[0]
-    df[op] = 52513*[0]
-    m = df.shape[0]
-    for i in range(m):
-        print(i)
-        if op in op_par_voit[i]:
-            df[op][i] = 1
+### Recupération des options présentes dans p% des voitures
 
-
-
-"""""
-def options_rec() :
+def options_rec(p) :
     new_options = []
     for elt in fdist :
-        if fdist[elt] > 1000 :
+        if fdist[elt] > df.shape[0]*(p/100) :
             new_options.append(elt)
     return(new_options)
 
-options2 = options_rec()
+options2 = options_rec(10)
+len(options2)
 
+
+### Ajout des nouvelles options à la table
+
+decompte = 0
+for elt in options2 :
+    decompte += 1
+    print(decompte)
+    df[elt] = 52513*['0']
+    m = df.shape[0]
+    for i in range(m):
+        if elt in op_par_voit[i]:
+            df[elt][i] = '1'
+
+df.to_csv('D:/Projet info 2A/data.csv', index = False)
+
+base2 = pd.read_csv('D:/Projet info 2A/data.csv')
+
+
+
+### ACP sur les variables options retenues
+
+from prince import MCA
+from prince import PCA
+
+base_acm = df.iloc[:,23:]
+mca = MCA(n_components =96)
+pca = PCA()
+mca = mca.fit(base_acm)
+pca = pca.fit(base_acm)
+
+p = mca.n_components
+eigen = mca.eigenvalues_
+inertia=mca.explained_inertia_
+
+
+"""
 pst = PorterStemmer()
 pst.stem('prenez')
 """
