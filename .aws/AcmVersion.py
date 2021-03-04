@@ -9,39 +9,89 @@ import s3fs
 #import nltk
 # probleme cet import
 df = pd.read_csv("/Users/famille//projetstat/.aws/automobile2.csv", error_bad_lines=False, index_col=0)
-
+df1 = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv", error_bad_lines=False, index_col=0)
 from numpy import unique
-#### Extraction des variables qualitatives et quantitatives
-vsQual = df[["modele_com", "energie", "boite_de_vitesse", "premiere_main", "departement", "porte"]]
-# Suppression des variables département et porte et des valeurs manquantes
-Qual = vsQual.drop(["departement", "porte"], axis="columns").dropna()
-print(Qual.describe())
+#### Extraction des variables qualitatives
+
+Qual = df[['finition_intens','finition_business', 'finition_limited', 'finition_zen',
+             'finition_societe', 'finition_trend', 'finition_rs','finition_expression', 'autre_finition','modele_com']]
+
+#print(Qual.describe())
+from numpy import unique
+Finition= unique(df['Finition'])
+print(Finition)
 # print(Qual.isna().sum())
+Qual=pd.get_dummies(Qual)
+#inertie des individus
+n=Qual.shape[0]
+p=Qual.shape[1]
+ind_moy = numpy.sum(Qual.values,axis=0)/(n*p)
+disto_ind = numpy.apply_along_axis(arr=Qual.values,axis=1,func1d=lambda x:numpy.sum(1/ind_moy*(x/p-ind_moy)**2))
+#poids des obs.
+poids_ind = numpy.ones(Qual.shape[0])/n
+#inertie
+inertie_ind = poids_ind*disto_ind
+#afffichage
+#print(pd.DataFrame(numpy.transpose([poids_ind,disto_ind,inertie_ind]),index=Qual.index))
 
 # ACM
 from prince import MCA
-mca = MCA(n_components=4, copy=True, check_input=True, engine='auto', random_state=1, benzecri=False)  # M-p puis >1/p
-mca = mca.fit(Qual)
+from fanalysis.ca import CA
+mca = MCA(n_components=8, copy=True, check_input=True, engine='auto', random_state=1, benzecri=False)  # M-p puis >1/p
+mca.fit(Qual)
+mca = CA(row_labels=Qual.index,col_labels=Qual.columns)
+mca.fit(Qual.values)
+#propriétés
+print(dir(mca))
+
+#valeurs propres
+print(mca.eig_)
+print(pd.DataFrame(numpy.transpose(mca.eig_),index=range(1,14),columns=['Val.P','%inertie','%inertiecumulée']))
+#print(pd.DataFrame(mca.row_coord_[:,:8],index=Qual.index,columns=['axe1','axe2','axe3','axe4','axe5','axe6','axe7','axe8']))
+
+#coordonnées fact. des modalités
+print(pd.DataFrame(mca.col_coord_[:,:8],index=Qual.columns,columns=['axe1','axe2','axe3','axe4','axe5','axe6','axe7','axe8']))
+
+profil = numpy.apply_along_axis(arr=Qual.values,axis=1,func1d=lambda x:x/numpy.sum(x))
+print(pd.DataFrame(profil,index=Qual.index,columns=Qual.columns))
+
+
+#réduire les profils
+profil = profil/numpy.std(profil,axis=0,ddof=0)
+print(profil)
+
+
+#pondération des modalités
+somme_col = numpy.sum(Qual.values,axis=0)
+pond_moda = (n-somme_col)/(n*p)
+print(pond_moda)
+
+# lancer une ACP
+from fanalysis.pca import PCA
+
+acp = PCA(std_unit=False, row_labels=Qual.index, col_labels=Qual.columns)
+acp.fit(profil)
+
+# valeurs propres
+print(acp.eig_[0])
+
+# coordonnées fact. des observations
+print(pd.DataFrame(acp.row_coord_[:, :2], index=Qual.index, columns=['Fact.1', 'Fact.2']))
 
 
 # Nombre de composents:
 p = mca.n_components
 
-# print(p)
-
-# Valeurs propres MCA
-eigen = mca.eigenvalues_
-# eigen1=famd.eigenvalues_
-eigendf = pd.DataFrame(eigen, columns=["eigen"], index=["Dim {}".format(i) for i in range(1, p + 1, 1)])
-inertia = mca.explained_inertia_
-inertiadf = pd.DataFrame(inertia, columns=["inertia"], index=["Dim {}".format(i) for i in range(1, p + 1, 1)])
+#print(p)
 
 # Valeurs propres acm
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+'''
 print(eigendf)
-print(inertiadf)
+#print(inertiadf)
+
 ax = mca.plot_coordinates(
     X=Qual,
     ax=None,
@@ -54,13 +104,17 @@ ax = mca.plot_coordinates(
     show_column_labels=True,
     legend_n_cols=1)
 plt.show()
-
+'''
 # Coordonnées des individus
+'''
 rowCoord = mca.row_coordinates(Qual)
-rowCoord.columns = ['axe1', 'axe2', 'axe3', 'axe4']
+rowCoord.columns = ['axe1', 'axe2', 'axe3', 'axe4','axe5','axe6','axe7','axe8']
+from sklearn.preprocessing import MinMaxScaler
+scaler = MinMaxScaler()
+scaler.fit(rowCoord)
+scaler.transform(rowCoord)
 print(rowCoord.head())
 
-# print(rowCoord.shape)
 from sklearn.cluster import KMeans
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
@@ -72,7 +126,7 @@ import matplotlib.pyplot as plt
 # nuage de points
 # indexNames= quanti[ quanti['prix_vente']>0.8*10**7].index
 # Delete these row indexes from dataFrame
-'''
+
 quanti.drop(indexNames, inplace=True)
 print(quanti)
 plt.scatter(quanti['age'],quanti['prix_vente'])
@@ -89,9 +143,10 @@ scaler.transform(rowCoord)
 '''
 # methode des kmeans pour chaque choix de nbr de clusters
 
-'''
+
 # choix de k
 # acp et acm font ca
+'''
 sse = []
 k_rng = range(1, 10)
 for k in k_rng:
@@ -118,16 +173,17 @@ rowCoord['cluster'] = y_predicted
 # rowCoord1['cluster']=y_predicted1
 # print(km.cluster_centers_) # centres des classes
 
-
+'''
 # construire chaque dataframe et repre graphique
-
+'''
 df1 = rowCoord[rowCoord.cluster == 0]
 df2 = rowCoord[rowCoord.cluster == 1]
 df3 = rowCoord[rowCoord.cluster == 2]
 df4 = rowCoord[rowCoord.cluster == 3]
 '''
 # represent graphique:
-'''plt.scatter(df1.axe1,df1.axe2,color='green')
+'''
+plt.scatter(df1.axe1,df1.axe2,color='green')
 plt.scatter(df2.axe1,df2.axe2,color='red')
 plt.scatter(df3.axe1,df3.axe2,color='black')
 #plt.scatter(df4.age,df4['kilometrage'],color='yellow')
@@ -170,6 +226,30 @@ idg = np.argsort(groupes_cah)
 print(pandas.DataFrame(Qual.index[idg],groupes_cah[idg]))
 
 '''
-
+'''
+df["Finition"] = df["Finition"].replace("Alize", "autre")
+df["Finition"] = df["Finition"].replace("Authentique", "autre")
+df["Finition"] = df["Finition"].replace("Billabong", "autre")
+df["Finition"] = df["Finition"].replace("Campus", "autre")
+df["Finition"] = df["Finition"].replace("Dynamique", "autre")
+df["Finition"] = df["Finition"].replace("Exception", "autre")
+df["Finition"] = df["Finition"].replace("Extreme", "autre")
+df["Finition"] = df["Finition"].replace("GT", "autre")
+df["Finition"] = df["Finition"].replace("Generation", "autre")
+df["Finition"] = df["Finition"].replace("Initiale", "autre")
+df["Finition"] = df["Finition"].replace("Life", "autre")
+df["Finition"] = df["Finition"].replace("Luxe", "autre")
+df["Finition"] = df["Finition"].replace("One", "autre")
+df["Finition"] = df["Finition"].replace("Privilege", "autre")
+df["Finition"] = df["Finition"].replace("RTA", "autre")
+df["Finition"] = df["Finition"].replace("RTE", "autre")
+df["Finition"] = df["Finition"].replace("RXE", "autre")
+df["Finition"] = df["Finition"].replace("RXT", "autre")
+df["Finition"] = df["Finition"].replace("SI", "autre")
+df["Finition"] = df["Finition"].replace("Sport", "autre")
+df["Finition"] = df["Finition"].replace("Tomtom", "autre")
+df["Finition"] = df["Finition"].replace("Trend", "autre")
+Qual = df[["Finitions", 'autre_finition']]
+'''
 
 # df.to_csv('/Users/famille//projetstat/.aws/automobile.csv')
