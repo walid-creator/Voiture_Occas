@@ -8,7 +8,7 @@ import matplotlib
 import s3fs
 #import nltk
 # probleme cet import
-df = pd.read_csv("/Users/famille//projetstat/.aws/automobile2.csv", error_bad_lines=False, index_col=0)
+df = pd.read_csv("/Users/famille//projetstat/.aws/df_modelisation.csv", error_bad_lines=False, index_col=0)
 df1 = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv", error_bad_lines=False, index_col=0)
 from numpy import unique
 #### Extraction des variables qualitatives
