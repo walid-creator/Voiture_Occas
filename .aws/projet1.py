@@ -9,7 +9,7 @@ import s3fs
 #import nltk
 #probleme cet import
 #df1 = pd.read_csv("s3://projet-stat-ensai/Lacentrale.csv",sep=';', dtype=str)
-df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
+df = pd.read_csv("/Users/famille//projetstat/.aws/aws_automobile.csv",error_bad_lines=False,index_col=0)
 print(df.shape)
 print(df.head())
 
@@ -288,4 +288,4 @@ print(valmax)
 
 
 
-#df.to_csv('/Users/famille//projetstat/.aws/automobile.csv')@
+df.to_csv('/Users/famille//projetstat/.aws/aws_automobile1.csv')
