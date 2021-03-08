@@ -174,6 +174,3 @@ for i in range(13) :
 pst = PorterStemmer()
 pst.stem('prenez')
 """
-
-for i in range(3) :
-    print("rezo%s" % (i))
