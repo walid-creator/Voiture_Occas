@@ -8,10 +8,13 @@ import matplotlib
 #import s3fs
 #import nltk
 #probleme cet import
-df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
+#df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
 dftest = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
+from pandas import to_datetime
+dftest["date_depublication"] = to_datetime(dftest["date_publication"]).dt.tz_localize(None)
+print(dftest["date_depublication"].head())
 #suppression de electrique et heelect dans l'acm
-indexNames1 = dftest[ dftest["energie"] == 'electrique'].index
+'''indexNames1 = dftest[ dftest["energie"] == 'electrique'].index
 indexNames2 = dftest[ dftest["energie"] == 'heelect'].index
 print(dftest[ dftest["energie"] == 'electrique'].prix_vente)
 prix=dftest[ dftest["energie"] == 'heelect'].prix_vente
@@ -22,20 +25,18 @@ prix=list(prix)
 
 dftest.drop(indexNames1, inplace=True)
 dftest.drop(indexNames2, inplace=True)
+'''
 
-from numpy import unique
 
 #### Extraction des variables qualitatives et quantitatives
-vsQual = dftest[["modele_com","energie","boite_de_vitesse","premiere_main","departement", "porte"]]
+Qual = dftest[["modele_com","energie","boite_de_vitesse","premiere_main","departement", "porte"]]
 Quanti=dftest[[u'horsepower',u'engine',"age"]]# horsepower et age plus corrélé au prix
 #vs=df[["modele_com","energie","boite_de_vitesse","premiere_main","departement", "porte","age","kilometrage"]].dropna()
 ######fadm
 
 
 # Suppression des variables département et porte et des valeurs manquantes
-Qual = vsQual.drop(["departement","porte"], axis = "columns").dropna()
-Quanti = Quanti.dropna()
-print(Quanti.describe())
+
 #print(Qual.isna().sum())
 
 # ACM et ACP
