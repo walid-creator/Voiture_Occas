@@ -164,9 +164,10 @@ plt.show()
 ### Création des axes avec les coordonnées
 
 rowCoord = pca.row_coordinates(base_acm)
-table = df.iloc[:,:23]
+table = pd.read_csv('D:/Projet stat 2A/projet_stat/.aws/df_modelisation.csv')
 for i in range(13) :
     table["axe %s" %(i+1)] = rowCoord[i]
+table.to_csv('D:/Projet stat 2A/projet_stat/.aws/df_modelisation.csv', index = False)
 
 
 
