@@ -10,10 +10,11 @@ import s3fs
 # probleme cet import
 df = pd.read_csv("/Users/famille//projetstat/.aws/df_modelisation.csv", error_bad_lines=False, index_col=0)
 df1 = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv", error_bad_lines=False, index_col=0)
+print(df1.columns)
 from numpy import unique
 #### Extraction des variables qualitatives
 
-Qual = df[['finition_intens','finition_business', 'finition_limited', 'finition_zen',
+Qual = df1[['finition_intens','finition_business', 'finition_limited', 'finition_zen',
              'finition_societe', 'finition_trend', 'finition_rs','finition_expression', 'autre_finition','modele_com']]
 
 #print(Qual.describe())
