@@ -8,7 +8,7 @@ import matplotlib
 import s3fs
 #import nltk
 #probleme cet import
-df = pd.read_csv("/Users/famille//projetstat/.aws/df_modelisation.csv",error_bad_lines=False,index_col=0)
+df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
 #df = pd.read_csv("/Users/famille//projetstat/.aws/aws_automobile.csv",error_bad_lines=False,index_col=0)
 
 #print(df.shape)
@@ -259,10 +259,29 @@ print(df['prix_vente'].astype('float').std(axis=0))# ecrart type au sens statist
 #un ecrat type trop grand de 55622
 #ou
 '''
-#print(df["prix_vente"].describe())
 
+#effectif age et prix de vente
+'''
+print(df.columns)
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
+print(df["prix_vente"].describe())
+indexNames3 = df[ df["prix_vente"] > 10**5].index
+df.drop(indexNames3, inplace=True)
+plt.scatter(df["age"],df["prix_vente"])
+plt.show()
 
-
+df1age1an=df[ df["age"] < 365]
+eff1=df1age1an.shape[0]/df.shape[0]
+df1age10an=df[ df["age"] > 1825]
+eff2=df1age10an.shape[0]/df.shape[0]
+print(eff1)
+print(eff2)
+print(1-(eff1+eff2))
+print(df1age1an["prix_vente"].describe())
+print(df1age10an["prix_vente"].describe())
+'''
 #reprensentation graphique pour les differentes correlations qualitatives
 '''
 import matplotlib
