@@ -80,4 +80,4 @@ title("Matrice de Confusion")
 colorbar()
 show()
 '''
-df.to_csv("/Users/famille//projetstat/.aws/df_modelisation.csv")
+#df.to_csv("/Users/famille//projetstat/.aws/df_modelisation.csv")
