@@ -8,7 +8,7 @@ import matplotlib
 import s3fs
 #import nltk
 #probleme cet import
-#df = pd.read_csv("/Users/famille//projetstat/.aws/automobile.csv",error_bad_lines=False,index_col=0)
+df = pd.read_csv("/Users/famille//projetstat/.aws/df_modelisation.csv",error_bad_lines=False,index_col=0)
 #df = pd.read_csv("/Users/famille//projetstat/.aws/aws_automobile.csv",error_bad_lines=False,index_col=0)
 
 #print(df.shape)
@@ -259,7 +259,7 @@ print(df['prix_vente'].astype('float').std(axis=0))# ecrart type au sens statist
 #un ecrat type trop grand de 55622
 #ou
 '''
-print(df["prix_vente"].describe())
+#print(df["prix_vente"].describe())
 
 
 
