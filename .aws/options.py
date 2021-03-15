@@ -169,6 +169,7 @@ for i in range(13) :
     table["axe %s" %(i+1)] = rowCoord[i]
 table.to_csv('D:/Projet info 2A/Table_finale.csv', index = False)
 table.to_csv('D:/Projet stat 2A/projet_stat/.aws/df_modelisation.csv', index = False)
+table.to_csv('D:/Projet stat 2A/projet_stat/.aws/table_finale.csv', index = False)
 
 
 
