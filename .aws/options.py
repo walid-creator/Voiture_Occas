@@ -63,7 +63,7 @@ def liste_options() :
 options,op_par_voit = liste_options()
 
 fdist = FreqDist(options)
-freq_options = fdist.most_common(10)
+freq_options = fdist.most_common(6000)
 
 
 ### Recupération des options présentes dans au moins p% des voitures
@@ -167,6 +167,7 @@ rowCoord = pca.row_coordinates(base_acm)
 table = pd.read_csv('D:/Projet stat 2A/projet_stat/.aws/df_modelisation.csv')
 for i in range(13) :
     table["axe %s" %(i+1)] = rowCoord[i]
+table.to_csv('D:/Projet info 2A/Table_finale.csv', index = False)
 table.to_csv('D:/Projet stat 2A/projet_stat/.aws/df_modelisation.csv', index = False)
 
 
