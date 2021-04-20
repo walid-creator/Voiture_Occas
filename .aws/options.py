@@ -17,15 +17,6 @@ print(df.columns)
 print(df.describe())
 
 
-
-data = df.to_numpy()
-data2 = df.values
-
-text = "In Brazil they drive on the right-hand side of the road. Brazil has a large coastline on the eastern side of South America"
-token = word_tokenize(text)
-
-df["reference"]
-
 def uniform(word) :
     u = unicodedata.normalize('NFKD', word).encode('ASCII', 'ignore')
     u2 = u.decode('ASCII')
@@ -145,6 +136,9 @@ plt.plot(inertia)
 plt.show()
 print(inertiadf)
 inertiadf["inertia"][1:30]
+
+eigendf["inertia"] = inertia
+eigendf.to_csv('D:/Projet stat 2A/resultat_acp3.csv')
 
 ### 13 axes retenus
 
