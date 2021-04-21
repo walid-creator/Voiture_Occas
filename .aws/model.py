@@ -234,3 +234,34 @@ R2_ajsuté value for k=  5 is: 0.869869633742905
 R2_ajusté_forw value for k=  5 is: 0.869869633742905'''
 
 
+#représenatation graphique pour la comparaison des modèles
+import matplotlib.pyplot as plt
+import seaborn as sns
+axes = plt.gca()
+x = ['KNN','RF','ArbreD','RL']
+y0 = [1,2,3,4]
+y1= [1.2,3.1,2.2,1]
+y2= [2,1,2,1]
+y3= [1,3,2,1]
+a1, =plt.plot(x,y0,color="yellow",label=" r2")
+
+a2, =plt.plot(x,y1,color="red")
+
+a3, =plt.plot(x,y2,color="blue")
+
+a4, =plt.plot(x,y3,color="black")
+plt.legend([a1, a2, a3, a4,], ['r2','MAPE','CV','MAE'])
+plt.title("Evaluation par différents critères de chaque modèle")
+axes.set_xlabel('axe des x')
+axes.set_ylabel('axe des y')
+#plt.legend(y,y1)
+plt.show()
+
+#distribution des prix:
+import numpy as np
+import seaborn as sns
+#densité
+sns.distplot(y, kde=True)
+plt.show()
+
+
