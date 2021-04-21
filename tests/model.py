@@ -9,7 +9,9 @@ import matplotlib.pyplot as plt
 
 #suppression des prix>10^5
 indexNames3 = df[ df["prix_vente"]  >10**5].index
+#indexNames4 = df[ df["prix_vente"]  <5*10**3].index
 df.drop(indexNames3, inplace=True)
+#df.drop(indexNames4, inplace=True)
 n=df.shape[0]
 
 #df=df.head(1000)
@@ -55,20 +57,21 @@ X[["engine","kilometrage","horsepower",'axe 1', 'axe 2',
        'axe 3', 'axe 4', 'axe 5', 'axe 6', 'axe 7', 'axe 8', 'axe 9', 'axe 10',
        'axe 11', 'axe 12', 'axe 13']])
 
-#avec l'algo forward on sélectionnes les varaibles suivantes:
-'''X=X[['energie_Essence', 'boite_de_vitesse_meca', 'couleur_blanc',
+#avec l'algo forward on sélectionnes les varaibles suivantes: 10
+
+X=X[['energie_Essence', 'boite_de_vitesse_meca', 'couleur_blanc',
        'premiere_main_non', 'Finition_Societe', 'porte_3.0', 'engine',
-       'kilometrage', 'horsepower', 'axe 1']]'''
-#y=y.to_frame()
-#y=scaler.fit_transform(y)
-#y = pd.DataFrame(y,columns=['prix_vente'])
+       'kilometrage', 'horsepower', 'axe 1']]
+
+
 
 #spliter les données
 import numpy as np
 X_train,X_test,y_train,y_test=train_test_split(X,np.log(y),test_size=0.3,random_state=11)
 X_train = pd.DataFrame(X_train)
 X_test = pd.DataFrame(X_test)
-
+y_train=y_train.tolist()
+y_test=y_test.tolist()
 
 
 from sklearn.model_selection import GridSearchCV
@@ -79,13 +82,13 @@ knn = KNeighborsRegressor()
 #choix de k: nb du plus proche voisin par deux méthodes
 #méthode1:
 
-
+'''
 param_grid={'n_neighbors': np.arange(1,50),'metric': ['manhattan','euclidean'],'weights':['distance','uniform']}
 from sklearn.model_selection import GridSearchCV
 knn = GridSearchCV(knn, param_grid, cv=5)
 knn.fit(X_train,y_train)
 print(knn.best_params_)
-
+'''
 
 
 
@@ -94,43 +97,62 @@ import math
 from sklearn.neighbors import KNeighborsRegressor
 knn = KNeighborsRegressor(metric= 'euclidean', n_neighbors= 9,weights='distance')# les prix ne sont pas uniformement distribués
 knn.fit(X_train,y_train)
-print(knn.score(X_test,y_test))
+
 #prédiction
 pred=knn.predict(X_test)
-
+pred_train=knn.predict(X_train)
 #erreure et score
 import math
 from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import r2_score
 from sklearn.metrics import mean_absolute_percentage_error
-error = math.sqrt(mean_squared_error(y_test,pred)) #calculate rmse
-score= knn.score(X_test,y_test)
+error = math.sqrt(mean_squared_error(np.exp(y_test),np.exp(pred))) #calculate rmse
+error_train= math.sqrt(mean_squared_error(np.exp(y_train),np.exp(pred_train)))
+score= r2_score(np.exp(y_test),np.exp(pred))
+score_train= r2_score(np.exp(y_train),np.exp(pred_train))
+mae=mean_absolute_error(np.exp(y_test),np.exp(pred))
 mape=mean_absolute_percentage_error(np.exp(y_test),np.exp(pred))
+mae_train= mean_absolute_error(np.exp(y_train),np.exp(pred_train))
+mape_train=mean_absolute_percentage_error(np.exp(y_train),np.exp(pred_train))
+def get_sd_error(Y_True,Y_Pred):
+    n = len(Y_Pred)
+    somme = 0
+    m_bar = mean_absolute_percentage_error(Y_True, Y_Pred)
+    for i in range(n):
+        somme += ((np.abs(Y_True[i] - Y_Pred[i])/Y_True[i]) - m_bar)**2
+    return(np.sqrt(somme/n))
 
+
+
+ecart_type=get_sd_error(np.exp(y_test), np.exp(pred))
+coef_var=get_sd_error(np.exp(y_test), np.exp(pred))/mape
+ecart_type_train=get_sd_error(np.exp(y_train), np.exp(pred_train))
+coef_var_train=get_sd_error(np.exp(y_train), np.exp(pred_train))/mape_train
 
 
 
 #erreure quadratique moyenne
 print('RMSE value for k= ', 9 , 'is:', error)
-#sans traitement=1578.0976223381065
-#log=0.21847782477102562//dernier
-#norm=0.4089707745255511 //c'est normal car on est oentre 0 et 1 et la différence au carré est de plus en plus en petite
-
+print('RMSE_train value for k= ', 9 , 'is:', error_train)
 #R^2
 print('Score value for k= ', 9 , 'is:', score)
-#sans traitement=0.8357542311811924
-#log=0.7278853117792159//dernier
-#norm=0.8357542311811924
-
+print('Score_train value for k= ', 9 , 'is:', score_train)
 #erreure en valeur absolue
-print('MAPE value for k= ', 9 , 'is:', mape)
-#sans traitement=12.423715479695412%
-#log=0.016168859332416144//dernier
-#norm=128.825381 %
-
+print('MAE value for k= ', 9 , 'is:', mae)
+print('MAE value_train for k= ', 9 , 'is:', mae_train)
+print('Ecart type for k= ', 9 , 'is:', ecart_type)
+print('Ecart_train type for k= ', 9 , 'is:', ecart_type_train)
+print('Coeff de variation for k= ', 9 , 'is:', coef_var)
+print('Coeff_train de variation for k= ', 9 , 'is:', coef_var_train)
+print('MAPE for k= ', 9 , 'is:', mape)
+print('MAPE_train for k= ', 9 , 'is:', mape_train)
 #to sum up:
-#RMSE value for k=  9 is: 0.21847782477102562
+#RMSE value for k=  9 is: 2031.3787234678903
 #Score value for k=  9 is: 0.7236276765367943
-#MAPE value for k=  9 is: 0.16304824258851666
+#Mape value for k=  9 is: 0.16304824258851666
+#Ecart type for k=  9 is: 0.3187826817234875
+#Coeff de variation for k=  9 is: 1.9551433162514753
 
 
 
@@ -151,6 +173,7 @@ print(sfw.best_params_)
 '''
 
 #lancement de l'algorithme
+'''
 sfw = SequentialFeatureSelector(knn,direction='forward',n_features_to_select=10)
 sfw.fit(X_train,y_train)
 print(sfw.get_support())
@@ -160,7 +183,8 @@ for i in range(45):
     if sfw.get_support()[i]==True:
         pos.append(i)
 colnamef = X.columns[pos]
-print(colnameB)
+print(colnamef)
+'''
 #RMSE value for k=  9 is: 0.15784476672070805
 #Score value for k=  9 is: 0.8557419031104687
 #MAPE value for k=  9 is: 0.11021248043273771
@@ -169,8 +193,9 @@ k=X.shape[1]
 R2_ajsuté=1 - (1-score)*(n-1)/(n-k-1)#0.7276518660749811
 R2_ajusté_forw= 1 - (1-score)*(n-1)/(n-kselct-1)#0.8580747705147141
 
-print('R2_ajsuté value for k= ', 10 , 'is:', R2_ajsuté)
-print('R2_ajusté_forw value for k= ', 10 , 'is:', R2_ajusté_forw)
+R2_ajsuté_train_forw= 1 - (1-score_train)*(n-1)/(n-kselct-1)
+print('R2_ajsuté value for k= ', 9 , 'is:', R2_ajsuté)
+print('R2_ajusté_forw value for k= ', 9 , 'is:', R2_ajusté_forw)
 
 
 #selection des variables les plus impactantes avec l'algorithme backward
@@ -187,5 +212,25 @@ colnameb = X.columns[pos]
 print(colnameb)
 '''
 
+from sklearn.feature_selection import SelectFromModel
+print(X.shape)
+model = SelectFromModel(knn, prefit=True)
+X_new = model.transform(X)
+print(X_new.shape)
+'''
+RMSE value for k=  9 is: 1398.8461658165036
+RMSE_train value for k=  9 is: 511.3966118923854
+Score value for k=  9 is: 0.8698820273471887
+Score_train value for k=  9 is: 0.9823598230746853
+MAE value for k=  9 is: 1029.7700292408615
+MAE value_train for k=  9 is: 178.95106997203484
+Ecart type for k=  9 is: 0.20597822984701722
+Ecart_train type for k=  9 is: 0.04000511675039793
+Coeff de variation for k=  9 is: 1.815367938983363
+Coeff_train de variation for k=  9 is: 2.795889507103137
+MAPE for k=  9 is: 0.11346362653202333
+MAPE_train for k=  9 is: 0.014308547118461712
+R2_ajsuté value for k=  5 is: 0.869869633742905
+R2_ajusté_forw value for k=  5 is: 0.869869633742905'''
 
 
