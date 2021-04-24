@@ -9,7 +9,7 @@ import unicodedata
 
 #Importation de la base de données:
 df = pd.read_csv("s3://projet-stat-ensai/Lacentrale.csv",sep=';', dtype=str)
-df = pd.read_csv(".aws/df_modelisation.csv",error_bad_lines=False,index_col=0)
+df = pd.read_csv(".aws/automobile.csv",error_bad_lines=False,index_col=0)
 
 #Traitement des valeurs manquantes :
 nan = float('nan')
