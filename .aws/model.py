@@ -14,6 +14,7 @@ df.drop(indexNames3, inplace=True)
 #df.drop(indexNames4, inplace=True)
 n=df.shape[0]
 
+
 #df=df.head(1000)
 y=df["prix_vente"]
 
@@ -56,6 +57,7 @@ X[["engine","kilometrage","horsepower",'axe 1', 'axe 2',
        'axe 11', 'axe 12', 'axe 13']]=scaler.fit_transform(X[["engine","kilometrage","horsepower",'axe 1', 'axe 2',
        'axe 3', 'axe 4', 'axe 5', 'axe 6', 'axe 7', 'axe 8', 'axe 9', 'axe 10',
        'axe 11', 'axe 12', 'axe 13']])
+
 
 #avec l'algo forward on sélectionnes les varaibles suivantes: 10
 
@@ -211,12 +213,13 @@ for i in range(45):
 colnameb = X.columns[pos]
 print(colnameb)
 '''
-
+'''
 from sklearn.feature_selection import SelectFromModel
 print(X.shape)
 model = SelectFromModel(knn, prefit=True)
 X_new = model.transform(X)
 print(X_new.shape)
+'''
 '''
 RMSE value for k=  9 is: 1398.8461658165036
 RMSE_train value for k=  9 is: 511.3966118923854
@@ -235,33 +238,49 @@ R2_ajusté_forw value for k=  5 is: 0.869869633742905'''
 
 
 #représenatation graphique pour la comparaison des modèles
+# continuer avec seaborn ici plut^^
 import matplotlib.pyplot as plt
 import seaborn as sns
 axes = plt.gca()
-x = ['KNN','RF','ArbreD','RL']
-y0 = [1,2,3,4]
-y1= [1.2,3.1,2.2,1]
-y2= [2,1,2,1]
-y3= [1,3,2,1]
-a1, =plt.plot(x,y0,color="yellow",label=" r2")
+x = ['Régression Linéaire','KNN','Arbres de décision','Random Forest',]
+y0 = [0.85,0.88,0.83,0.86]
+#y1= [1507,1324,1432,1425]
+y2= [0.098,0.11,0.11,0.1]
+y3= [1.15,1.93,1.9,1.5]
+plt.scatter(x,y0,color="red",label=" R2_ajusté")
 
-a2, =plt.plot(x,y1,color="red")
+#plt.scatter(x,y1,color="red",label=" RMSE")
 
-a3, =plt.plot(x,y2,color="blue")
+plt.scatter(x,y2,color="blue",label=" MAPE")
 
-a4, =plt.plot(x,y3,color="black")
-plt.legend([a1, a2, a3, a4,], ['r2','MAPE','CV','MAE'])
+plt.scatter(x,y3,color="black",label="CV(MAPE)")
+plt.legend()
 plt.title("Evaluation par différents critères de chaque modèle")
-axes.set_xlabel('axe des x')
-axes.set_ylabel('axe des y')
-#plt.legend(y,y1)
+axes.set_xlabel('Modèle')
+axes.set_ylabel('Critère')
+axes.set_facecolor('#E0E0E0')
+
+#tracer une ligne horizontale en y=5
+#plt.axhline(y=2, xmin=0.1, xmax=0.9)
+
+plt.grid()
 plt.show()
 
 #distribution des prix:
 import numpy as np
 import seaborn as sns
+#x1=np.arange(0,40000)
 #densité
-sns.distplot(y, kde=True)
+sns.distplot(np.exp(y_test), hist=False,kde=True, label='densité des vraies valeurs')
+sns.distplot(np.exp(pred), hist=False,kde=True, label='densité estimée')
+axes = plt.gca()
+axes.set_xlabel('prix de vente des véhicules en EURO')
+axes.set_ylabel('densité estimée')
+axes.set_xlim(0, 40000)
+plt.title("Comparaisons des densités des vraies données et des densités estimées")
+plt.legend()
+axes.set_facecolor('#E0E0E0')
 plt.show()
+
 
 
