@@ -15,7 +15,7 @@ from sklearn.metrics import mean_absolute_error
 
 ### avec statsmodels
 
-table = pd.read_csv('D:/Projet stat 2A/projet_stat/.aws/df_modelisation.csv')
+table = pd.read_csv("/Users/famille//projetstat/.aws/df_modelisation.csv",error_bad_lines=False,index_col=0)
 table = table.loc[table["prix_vente"]<100000,:]
 
 XTrain = table.drop(["prix_vente","date_mec","options","date_publication","date_depublication","departement"], axis = 1)

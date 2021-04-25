@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 #suppression des prix>10^5
 indexNames3 = df[ df["prix_vente"]  >10**5].index
-#indexNames4 = df[ df["prix_vente"]  <5*10**3].index
+#indexNames4 = df[ df["prix_vente"]  >1.3*10**4].index
 df.drop(indexNames3, inplace=True)
 #df.drop(indexNames4, inplace=True)
 n=df.shape[0]
@@ -242,6 +242,7 @@ R2_ajusté_forw value for k=  5 is: 0.869869633742905'''
 import matplotlib.pyplot as plt
 import seaborn as sns
 axes = plt.gca()
+
 x = ['Régression Linéaire','KNN','Arbres de décision','Random Forest',]
 y0 = [0.85,0.88,0.83,0.86]
 #y1= [1507,1324,1432,1425]
@@ -251,9 +252,9 @@ plt.scatter(x,y0,color="red",label=" R2_ajusté")
 
 #plt.scatter(x,y1,color="red",label=" RMSE")
 
-plt.scatter(x,y2,color="blue",label=" MAPE")
+plt.scatter(x,y2,marker="s",color="blue",label=" MAPE")
 
-plt.scatter(x,y3,color="black",label="CV(MAPE)")
+plt.scatter(x,y3,marker="+",color="black",label="CV(MAPE)")
 plt.legend()
 plt.title("Evaluation par différents critères de chaque modèle")
 axes.set_xlabel('Modèle')
@@ -267,19 +268,26 @@ plt.grid()
 plt.show()
 
 #distribution des prix:
+import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 #x1=np.arange(0,40000)
 #densité
-sns.distplot(np.exp(y_test), hist=False,kde=True, label='densité des vraies valeurs')
+
+
 sns.distplot(np.exp(pred), hist=False,kde=True, label='densité estimée')
 axes = plt.gca()
+for line in axes.lines:
+    line.set_linestyle("--")
+
+sns.distplot(np.exp(y_test), hist=True,kde=True, label='densité des vraies valeurs')
 axes.set_xlabel('prix de vente des véhicules en EURO')
 axes.set_ylabel('densité estimée')
 axes.set_xlim(0, 40000)
 plt.title("Comparaisons des densités des vraies données et des densités estimées")
 plt.legend()
 axes.set_facecolor('#E0E0E0')
+
 plt.show()
 
 
