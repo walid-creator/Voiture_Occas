@@ -40,6 +40,9 @@ YTrain = np.log(YTrain)
 
 xTrain, xTest, yTrain, yTest = train_test_split(data, YTrain, test_size = 0.3, random_state = 5)
 
+plt.hist(yTest, edgecolor='black', bins=100 , density=False, color='red')
+plt.show()
+
 regOLS = sm.OLS(yTrain,xTrain)
 resReg = regOLS.fit()
 
@@ -75,7 +78,7 @@ RMSE_train = np.sqrt(MSE_train)
 ecart_type_train = (abs((np.exp(yTrain) - np.exp(yPred_train))/np.exp(yTrain))-MAPE_train)**2
 ecart_type_train = np.sqrt(ecart_type_train.sum()/len(yTrain))
 CV_train = ecart_type_train / MAPE_train
-moy_yTrain = (np.exp(yTrain).sum())/len(yTrain)
+moy_yTrain = yTrain.sum() / len(yTrain)
 R2_train = 1 - (((np.exp(yTrain) - np.exp(yPred_train))**2).sum()) / (((np.exp(yTrain) - moy_yTrain)**2).sum())
 
 print(MAE_train,MAPE_train,RMSE_train,ecart_type_train,CV_train,R2_train)
@@ -104,11 +107,10 @@ while v and j < n:
         resReg = regOLS.fit()
         yPred = resReg.predict(X3Test)
         SSE = ((np.exp(yTest) - np.exp(yPred)) ** 2).sum()
-        CP_Mallows_j_i = (SSE/MSE) - X3Train.shape[0] + 2*(X3Train.shape[1]+1)
+        CP_Mallows_j_i = (SSE/MSE_test) - X3Train.shape[0] + 2*(X3Train.shape[1]+1)
         if CP_Mallows_j_i < CP_Mallows_j :
             meilleur_indice = i
             CP_Mallows_j = CP_Mallows_j_i
-    print(CP_Mallows_j)
     if CP_Mallows_j < CP_Mallows :
         XjTrain = X2Train.iloc[:,meilleur_indice]
         XjTest = X2Test.iloc[:,meilleur_indice]
@@ -186,19 +188,20 @@ regOLS = sm.OLS(yTrain, X1Train)
 resReg = regOLS.fit()
 print(resReg.summary())
 
-yPred = resReg.predict(X1Test)
+yPred = resReg.predict(X1Train)
 
-mape_reg = abs((np.exp(yTest) - np.exp(yPred))/np.exp(yTest))
-n = len(mape_reg)
-MAPE_reg = (mape_reg.sum())/n
-SE = (np.exp(yTest) - np.exp(yPred))**2
+MAPE = mean_absolute_percentage_error(np.exp(yPred),np.exp(yTrain))
+MAE = mean_absolute_error(np.exp(yPred),np.exp(yTrain))
+SE = (np.exp(yTrain) - np.exp(yPred))**2
 MSE = (SE.sum())/n
 RMSE = np.sqrt((SE.sum())/n)
+moy_yTrain = yTrain.sum() / len(yTrain)
+R2 = 1 - (((np.exp(yTrain) - np.exp(yPred))**2).sum()) / (((np.exp(yTrain) - moy_yTrain)**2).sum())
+ecart_type = (((np.exp(yTrain) - np.exp(yPred))**2/np.exp(yTrain))-MAPE)**2
+ecart_type = np.sqrt(ecart_type.sum()/len(yTrain))
+CV = ecart_type / MAPE
 
-ecart_type_mape = (mape_reg-MAPE_reg)**2
-ecart_type_mape = np.sqrt(ecart_type_mape.sum()/n)
-
-print(MAPE_reg,ecart_type_mape,RMSE)
+print(MAPE,ecart_type,RMSE,MAE,R2,CV)
 print(ecart_type_mape/MAPE_reg)
 
 ### Parcours backward sur le MAPE

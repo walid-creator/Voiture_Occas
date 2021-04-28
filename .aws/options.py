@@ -142,7 +142,17 @@ eigendf.to_csv('D:/Projet stat 2A/resultat_acp3.csv')
 
 ### 13 axes retenus
 
-ax = mca.plot_coordinates(
+from prince import CA
+
+contri = pca.column_correlations(base_acm)
+contri = contri.iloc[0:len(contri),0:13]
+contri = contri.sort_values(by = 12, ascending = False)
+
+
+
+
+
+ax = pca.plot_coordinates(
 X=base_acm,
 ax=None,
 figsize=(6, 6),
