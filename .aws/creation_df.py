@@ -89,7 +89,7 @@ for j in df.index.tolist():
     elif "bleu" in df[u'couleur'][j].strip(".").split():
         df[u'couleur'][j]='bleu'
 
-#PAS ENCORE executé
+
 df[u"couleur"].replace('1602832gris fonce', "gris",inplace= True)
 df['couleur'] = df['couleur'].str.replace(u"é", "e")
 df['couleur'] = df['couleur'].str.replace(u"É", "e")
@@ -128,7 +128,7 @@ for j in df.index:
     elif df[u'couleur'][j][0:4]=="tita":
         df[u'couleur'][j] = "titane"
 
-#unifomisation de couleur non encore termine
+#unifomisation de couleur:
 
 eff = df["couleur"].value_counts()
 pourcent = df["couleur"].value_counts(normalize = True)
@@ -472,8 +472,6 @@ df["horsepower"] = df.groupby(['modele_com','energie'])["horsepower"].transform(
 #Imputation des trois valeurs manquantes de puissance_fiscale.
 
 df["puissance_fiscale"] = df.groupby(['modele_com','energie'])["puissance_fiscale"].transform(lambda x: x.fillna(x.mode()[0]))
-
-
 
 #Récupération des finitions.
 def Recuperation_finition():
