@@ -13,7 +13,6 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 
 
-### avec statsmodels
 
 table = pd.read_csv('D:/Projet stat 2A/projet_stat/.aws/df_modelisation.csv')
 
