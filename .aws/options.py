@@ -1,14 +1,9 @@
 import pandas as pd
-import numpy as np
-import nltk
-import nltk.corpus
-import os
-import regex as reg
 from nltk.tokenize import word_tokenize
 from nltk.probability import FreqDist
-from nltk.stem import PorterStemmer
 import unicodedata
 
+### Importation des données
 
 df = pd.read_csv("s3://projet-stat-ensai/Lacentrale.csv",sep =';', dtype=str)
 print(df.shape)
@@ -16,12 +11,17 @@ print(type(df))
 print(df.columns)
 print(df.describe())
 
+### Fonction d'uniformisation des mots (on enlève les accents, on met en miniscule...)
 
 def uniform(word) :
     u = unicodedata.normalize('NFKD', word).encode('ASCII', 'ignore')
     u2 = u.decode('ASCII')
     u3 = u2.lower()
     return(u3)
+
+
+### Fonction renvoyant une liste avec l'ensemble des options présentes dans la variable 'options'
+### et une liste de liste contenant les options par voiture
 
 def liste_options() :
     m = df.shape[0]
@@ -30,11 +30,11 @@ def liste_options() :
     for i in range(m) :
         print(i)
         if type(df['options'][i]) == str :
-            words = word_tokenize(df['options'][i])
+            words = word_tokenize(df['options'][i])     # on tokenize l'information de df['options'][i]
             l = []
             n = len(words)
             i = 0
-            while i < n :
+            while i < n :    # on va parcourir la liste de mot words et on va regrouper les mots en groupe de mots formant les options en considérant que ces groupes de mots sont séparés par des points virgules
                 w = ''
                 while i < n and words[i] != '``' and words[i] != "''" and words != '"''"' and words[i] != ';' :
                     if len(w) > 0 :
@@ -53,8 +53,10 @@ def liste_options() :
 
 options,op_par_voit = liste_options()
 
+
+### Calcul des fréquences d'appartition de chaque options
+
 fdist = FreqDist(options)
-freq_options = fdist.most_common(6000)
 
 
 ### Recupération des options présentes dans au moins p% des voitures
@@ -66,11 +68,12 @@ def options_rec(p) :
             new_options.append(elt)
     return(new_options)
 
-options2 = options_rec(10)
-len(options2)
+
+options2 = options_rec(10)     # on récupère les options présentes dans au moins 10% des véhicules de la base
+len(options2)                  # on garde ainsi 96 options différentes
 
 
-### Ajout des nouvelles options à la table
+### Ajout de nouvelles variables indicatrices à la table pour chaque options, valant 1 si l'option est présente dans le véhicule et 0 sinon
 
 decompte = 0
 for elt in options2 :
@@ -83,10 +86,8 @@ for elt in options2 :
             df[elt][i] = 1
 
 
-#df.to_csv('D:/Projet info 2A/data.csv', index = False)
-df = pd.read_csv('D:/Projet info 2A/data.csv')
-
-### Variable autre options
+### Création d'une nouvelle variable indicatrice "autre_options" valant 1 si le véhicule considéré a au moins
+### 1 option n'appartenant pas au 96 options retenues
 
 df["autre_options"] = 52513*[0]
 for i in range(df.shape[0]) :
@@ -102,82 +103,36 @@ for i in range(df.shape[0]) :
             df["autre_options"][i] = 1
 
 
-
-
 ### ACP sur les variables options retenues
 
-from prince import MCA
 from prince import PCA
 
-base_acm = df.iloc[:,23:]
-mca = MCA(n_components =96)
+base_acp = df.iloc[:,23:]      # on sélectionne les 97 variables indicatrices des options
 pca = PCA(n_components =97)
-mca = mca.fit(base_acm)
-pca = pca.fit(base_acm)
-
-
-p = mca.n_components
-eigen = mca.eigenvalues_
-inertia = mca.explained_inertia_
+pca = pca.fit(base_acp)
 
 p = pca.n_components
 eigen = pca.eigenvalues_
 inertia = pca.explained_inertia_
 
-import matplotlib
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
-
 eigendf = pd.DataFrame(eigen, columns = ["eigen"], index = ["Dim {}".format(i) for i in range(1, p+1,1)])
 print(eigendf)
 
 inertiadf = pd.DataFrame(inertia, columns = ["inertia"], index = ["Dim {}".format(i) for i in range(1, p+1,1)])
-plt.plot(inertia)
-plt.show()
 print(inertiadf)
+
 inertiadf["inertia"][1:30]
+eigendf["eigen"][1:30]
 
-eigendf["inertia"] = inertia
-eigendf.to_csv('D:/Projet stat 2A/resultat_acp3.csv')
+#Règle de Kaiser : 13 axes retenus car 13 axes pour lesquels la valeur propre est supérieur à 1
 
-### 13 axes retenus
-
-from prince import CA
-
-contri = pca.column_correlations(base_acm)
-contri = contri.iloc[0:len(contri),0:13]
-contri = contri.sort_values(by = 12, ascending = False)
-
-
-
-
-
-ax = pca.plot_coordinates(
-X=base_acm,
-ax=None,
-figsize=(6, 6),
-show_row_points=False,
-row_points_size=10,
-show_row_labels=False,
-show_column_points=True,
-column_points_size=10,
-show_column_labels=True,
-legend_n_cols=0)
-plt.show()
 
 ### Création des axes avec les coordonnées
 
-rowCoord = pca.row_coordinates(base_acm)
-table = pd.read_csv('D:/Projet stat 2A/projet_stat/.aws/df_modelisation.csv')
+rowCoord = pca.row_coordinates(base_acp)
+table = pd.read_csv('D:/Projet stat 2A/projet_stat/.aws/df_modelisation.csv')      # récupération du tableau de données modifiés dans les autres fichiers
 for i in range(13) :
     table["axe %s" %(i+1)] = rowCoord[i]
-table.to_csv('D:/Projet info 2A/Table_finale.csv', index = False)
 table.to_csv('D:/Projet stat 2A/projet_stat/.aws/df_modelisation.csv', index = False)
-table.to_csv('D:/Projet stat 2A/projet_stat/.aws/table_finale.csv', index = False)
 
 
-
-"""
-pst = PorterStemmer()
-pst.stem('prenez')
-"""
