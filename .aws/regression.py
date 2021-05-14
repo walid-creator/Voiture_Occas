@@ -16,42 +16,55 @@ from sklearn.metrics import mean_absolute_error
 ### avec statsmodels
 
 table = pd.read_csv('D:/Projet stat 2A/projet_stat/.aws/df_modelisation.csv')
+
+### On enlève les outliers
+
 table = table.loc[table["prix_vente"]<100000,:]
 
-XTrain = table.drop(["prix_vente","date_mec","options","date_publication","date_depublication","departement"], axis = 1)
-XTrain = XTrain.drop(["modele_com","energie","boite_de_vitesse","couleur","premiere_main","Finition","porte"], axis = 1)
-XTrain = XTrain.iloc[0:len(XTrain),1:21]
-XTrain = sm.add_constant(XTrain)
+
+### Sélection des variables quanti
+
+quant = table.drop(["prix_vente","date_mec","options","date_publication","date_depublication","departement"], axis = 1)
+quant = quant.drop(["modele_com","energie","boite_de_vitesse","couleur","premiere_main","Finition","porte"], axis = 1)
+quant = quant.iloc[0:len(quant),1:19]
+quant = sm.add_constant(quant)
+
+
+### Sélection des variables catégorielle et transformation en variable indicatrice pour chaque modalité
 
 qualcol = ["energie", "boite_de_vitesse","couleur", "premiere_main", "Finition","porte"]
 qual = table[qualcol].astype(str)
-tdc = pd.get_dummies(qual)
-
-data = pd.concat([XTrain, tdc], axis = 1)
-
-# On rend le modèle identifiable en enlevant une indicatrice pour chaque variable catégorielle
-# data = data.drop(["energie_Hybride essence électrique","boite_de_vitesse_auto","couleur_orange","premiere_main_oui","Finition_Expression","porte_0.0"], axis = 1)
+qual = pd.get_dummies(qual)
 
 
-print(XTrain.head())
+### Concaténation + ajout de la constante
 
-YTrain = table["prix_vente"]
-YTrain = np.log(YTrain)
+data = pd.concat([quant, qual], axis = 1)
+data = sm.add_constant(data)
 
-xTrain, xTest, yTrain, yTest = train_test_split(data, YTrain, test_size = 0.3, random_state = 5)
 
-plt.hist(yTest, edgecolor='black', bins=100 , density=False, color='red')
-plt.show()
+### Sélection de la variable cible, application du logarithme
+
+prix = table["prix_vente"]
+prix = np.log(prix)
+
+
+### Sélection des échantillons d'apprentissage et de test
+
+xTrain, xTest, yTrain, yTest = train_test_split(data, prix, test_size = 0.3, random_state = 5)
+
+
+### Régression linéaire
 
 regOLS = sm.OLS(yTrain,xTrain)
 resReg = regOLS.fit()
 
-
 print(resReg.summary())
 
-### Indices échantillon test
 
-yPred_test = resReg.predict(xTest)
+### Calcul des indices sur l'échantillon test
+
+yPred_test = resReg.predict(xTest)   # prédiction des valeurs de prix sur l'échantillon test
 
 MAE_test = mean_absolute_error(np.exp(yPred_test),np.exp(yTest))
 MAPE_test = mean_absolute_percentage_error(np.exp(yPred_test),np.exp(yTest))
@@ -59,17 +72,15 @@ MSE_test = mean_squared_error(np.exp(yPred_test),np.exp(yTest))
 RMSE_test = np.sqrt(MSE_test)
 ecart_type_test = (abs((np.exp(yTest) - np.exp(yPred_test))/np.exp(yTest))-MAPE_test)**2
 ecart_type_test = np.sqrt(ecart_type_test.sum()/len(yTest))
-ecart_type_test = (((np.exp(yTest) - np.exp(yPred_test))**2/np.exp(yTest))-MAPE_test)**2
-ecart_type_test = np.sqrt(ecart_type_test.sum()/len(yTest))
 CV_test = ecart_type_test / MAPE_test
 moy_yTest = (np.exp(yTest).sum())/len(yTest)
 R2_test = 1 - (((np.exp(yTest) - np.exp(yPred_test))**2).sum()) / (((np.exp(yTest) - moy_yTest)**2).sum())
 
 print(MAE_test,MAPE_test,RMSE_test,ecart_type_test,CV_test,R2_test)
 
-### Indices échantillon train
+### Calcul des indices sur l'échantillon d'apprentissage
 
-yPred_train = resReg.predict(xTrain)
+yPred_train = resReg.predict(xTrain)   # prédiction des valeurs de prix sur l'échantillon d'aprentissage
 
 MAE_train = mean_absolute_error(np.exp(yPred_train),np.exp(yTrain))
 MAPE_train= mean_absolute_percentage_error(np.exp(yPred_train),np.exp(yTrain))
@@ -126,83 +137,6 @@ regOLS = sm.OLS(yTrain, X1Train)
 resReg = regOLS.fit()
 print(resReg.summary())
 
-yPred = resReg.predict(X1Test)
-
-mape_reg = abs((np.exp(yTest) - np.exp(yPred))/np.exp(yTest))
-n = len(mape_reg)
-MAPE_reg = (mape_reg.sum())/n
-SE = (np.exp(yTest) - np.exp(yPred))**2
-MSE = (SE.sum())/n
-RMSE = np.sqrt((SE.sum())/n)
-
-ecart_type_mape = (mape_reg-MAPE_reg)**2
-ecart_type_mape = np.sqrt(ecart_type_mape.sum()/n)
-
-print(MAPE_reg,ecart_type_mape,RMSE)
-print(ecart_type_mape/MAPE_reg)
-
-### Parcours forward sur le MAPE
-
-X1Train = xTrain["const"]
-X1Test = xTest["const"]
-X2Train = xTrain.drop(["const"],axis = 1)
-X2Test = xTest.drop(["const"],axis = 1)
-n = X2Train.shape[1]
-CV = 10**10
-j = 0
-v = True
-while v and j < n:
-    print(j)
-    CV_j = 10**10
-    meilleur_indice = 0
-    m = n - j
-    for i in range(m) :
-        XTrain = X2Train.iloc[:,i]
-        XTest = X2Test.iloc[:,i]
-        X3Train = pd.concat([X1Train, XTrain], axis=1)
-        X3Test = pd.concat([X1Test, XTest], axis=1)
-        regOLS = sm.OLS(yTrain, X3Train)
-        resReg = regOLS.fit()
-        yPred = resReg.predict(X3Test)
-        mape_reg = abs((np.exp(yTest) - np.exp(yPred))/np.exp(yTest))
-        MAPE_j_i = (mape_reg.sum()) / len(mape_reg)
-        ecart_type_j_i = (mape_reg - MAPE_reg) ** 2
-        ecart_type_j_i = np.sqrt(ecart_type_mape.sum() / n)
-        CV_j_i = MAPE_j_i / ecart_type_j_i
-        if CV_j_i < CV_j :
-            meilleur_indice = i
-            CV_j = CV_j_i
-    print(CV_j)
-    if CV_j < CV :
-        XjTrain = X2Train.iloc[:,meilleur_indice]
-        XjTest = X2Test.iloc[:,meilleur_indice]
-        X1Train = pd.concat([X1Train, XjTrain], axis=1)
-        X1Test = pd.concat([X1Test, XjTest], axis=1)
-        X2Train = X2Train.drop(columns = X2Train.columns[meilleur_indice])
-        CV = CV_j
-        j += 1
-    else :
-        v = False
-
-regOLS = sm.OLS(yTrain, X1Train)
-resReg = regOLS.fit()
-print(resReg.summary())
-
-yPred = resReg.predict(X1Train)
-
-MAPE = mean_absolute_percentage_error(np.exp(yPred),np.exp(yTrain))
-MAE = mean_absolute_error(np.exp(yPred),np.exp(yTrain))
-SE = (np.exp(yTrain) - np.exp(yPred))**2
-MSE = (SE.sum())/n
-RMSE = np.sqrt((SE.sum())/n)
-moy_yTrain = yTrain.sum() / len(yTrain)
-R2 = 1 - (((np.exp(yTrain) - np.exp(yPred))**2).sum()) / (((np.exp(yTrain) - moy_yTrain)**2).sum())
-ecart_type = (((np.exp(yTrain) - np.exp(yPred))**2/np.exp(yTrain))-MAPE)**2
-ecart_type = np.sqrt(ecart_type.sum()/len(yTrain))
-CV = ecart_type / MAPE
-
-print(MAPE,ecart_type,RMSE,MAE,R2,CV)
-print(ecart_type_mape/MAPE_reg)
 
 ### Parcours backward sur le MAPE
 
@@ -248,23 +182,6 @@ regOLS = sm.OLS(yTrain, X2Train)
 resReg = regOLS.fit()
 print(resReg.summary())
 
-yPred = resReg.predict(X2Test)
-
-mape_reg = abs((np.exp(yTest) - np.exp(yPred))/np.exp(yTest))
-n = len(mape_reg)
-MAPE_reg = (mape_reg.sum())/n
-SE = (np.exp(yTest) - np.exp(yPred))**2
-MSE = (SE.sum())/n
-RMSE = np.sqrt((SE.sum())/n)
-
-ecart_type_mape = (mape_reg-MAPE_reg)**2
-ecart_type_mape = np.sqrt(ecart_type_mape.sum()/n)
-
-print(MAPE_reg,RMSE)
-print(ecart_type_mape/MAPE_reg)
-
-### Resultat backward CV : [MAPE,RMSE,CV] = [0.09813903253502688,1507.4281732291759,1.1497504722912784]
-### Resultat backward MAPE : [MAPE,RMSE,CV] = [0.09813903253502688,1507.4281732291759,1.1497504722912784]
 
 ### Regression Ridge
 
