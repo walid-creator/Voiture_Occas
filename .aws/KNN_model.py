@@ -9,9 +9,7 @@ import matplotlib.pyplot as plt
 
 #suppression des prix>10^5
 indexNames3 = df[ df["prix_vente"]  >10**5].index
-#indexNames4 = df[ df["prix_vente"]  >1.3*10**4].index
 df.drop(indexNames3, inplace=True)
-#df.drop(indexNames4, inplace=True)
 n=df.shape[0]
 
 
@@ -149,12 +147,7 @@ print('Coeff de variation for k= ', 9 , 'is:', coef_var)
 print('Coeff_train de variation for k= ', 9 , 'is:', coef_var_train)
 print('MAPE for k= ', 9 , 'is:', mape)
 print('MAPE_train for k= ', 9 , 'is:', mape_train)
-#to sum up:
-#RMSE value for k=  9 is: 2031.3787234678903
-#Score value for k=  9 is: 0.7236276765367943
-#Mape value for k=  9 is: 0.16304824258851666
-#Ecart type for k=  9 is: 0.3187826817234875
-#Coeff de variation for k=  9 is: 1.9551433162514753
+
 
 
 
@@ -213,36 +206,14 @@ for i in range(45):
 colnameb = X.columns[pos]
 print(colnameb)
 '''
-'''
-from sklearn.feature_selection import SelectFromModel
-print(X.shape)
-model = SelectFromModel(knn, prefit=True)
-X_new = model.transform(X)
-print(X_new.shape)
-'''
-'''
-RMSE value for k=  9 is: 1398.8461658165036
-RMSE_train value for k=  9 is: 511.3966118923854
-Score value for k=  9 is: 0.8698820273471887
-Score_train value for k=  9 is: 0.9823598230746853
-MAE value for k=  9 is: 1029.7700292408615
-MAE value_train for k=  9 is: 178.95106997203484
-Ecart type for k=  9 is: 0.20597822984701722
-Ecart_train type for k=  9 is: 0.04000511675039793
-Coeff de variation for k=  9 is: 1.815367938983363
-Coeff_train de variation for k=  9 is: 2.795889507103137
-MAPE for k=  9 is: 0.11346362653202333
-MAPE_train for k=  9 is: 0.014308547118461712
-R2_ajsuté value for k=  5 is: 0.869869633742905
-R2_ajusté_forw value for k=  5 is: 0.869869633742905'''
 
 
-#représenatation graphique pour la comparaison des modèles
+
+#représentation graphique pour la comparaison des modèles
 # continuer avec seaborn ici plut^^
 import matplotlib.pyplot as plt
 import seaborn as sns
 axes = plt.gca()
-
 x = ['Régression Linéaire','KNN','Arbres de décision','Random Forest',]
 y0 = [0.85,0.88,0.83,0.86]
 #y1= [1507,1324,1432,1425]
@@ -267,19 +238,17 @@ axes.set_facecolor('#E0E0E0')
 plt.grid()
 plt.show()
 
-#distribution des prix:
+
+
+#Comparaisons des densités des vraies données et des densités estimées avec une rerésentation de densités
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 #x1=np.arange(0,40000)
-#densité
-
-
 sns.distplot(np.exp(pred), hist=False,kde=True, label='densité estimée')
 axes = plt.gca()
 for line in axes.lines:
     line.set_linestyle("--")
-
 sns.distplot(np.exp(y_test), hist=True,kde=True, label='densité des vraies valeurs')
 axes.set_xlabel('prix de vente des véhicules en EURO')
 axes.set_ylabel('densité estimée')
@@ -287,7 +256,6 @@ axes.set_xlim(0, 40000)
 plt.title("Comparaisons des densités des vraies données et des densités estimées")
 plt.legend()
 axes.set_facecolor('#E0E0E0')
-
 plt.show()
 
 
